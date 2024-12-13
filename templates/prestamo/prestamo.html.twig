@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Préstamo{% endblock %}
+
+{% block body %}
+    <h1>Registrar Nuevo Préstamo</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.student) }}
+        {{ form_row(form.book) }}
+        {{ form_row(form.fechaPrestamo) }}
+        {{ form_row(form.fechaDevolucion) }}
+        
+        <button class="btn btn-primary">Registrar</button>
+    {{ form_end(form) }}
+
+    <script src="{{ asset('js/prestamo.js') }}"></script>
+{% endblock %}
