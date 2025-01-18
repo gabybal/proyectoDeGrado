@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historial de Devoluciones{% endblock %}
+
+{% block body %}
+<h1>Historial de Devoluciones</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Estudiante</th>
+            <th>Libro</th>
+            <th>Fecha de Préstamo</th>
+            <th>Fecha de Devolución</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for devolucion in devoluciones %}
+        <tr>
+            <td>{{ devolucion.student.name }}</td>
+            <td>{{ devolucion.book.title }}</td>
+            <td>{{ devolucion.fechaPrestamo | date('Y-m-d') }}</td>
+            <td>{{ devolucion.fechaDevolucion | date('Y-m-d') }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">No hay devoluciones registradas.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

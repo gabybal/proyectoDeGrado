@@ -16,13 +16,13 @@ class Book
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nombre = null;
+    private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     private ?string $autor = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $genero = null;
+    private ?string $genre = null;
 
     /**
      * @var Collection<int, Prestamo>
@@ -40,14 +40,14 @@ class Book
         return $this->id;
     }
 
-    public function getNombre(): ?string
+    public function getTitle(): ?string
     {
-        return $this->nombre;
+        return $this->title;
     }
 
-    public function setNombre(string $nombre): static
+    public function setTitle(string $title): static
     {
-        $this->nombre = $nombre;
+        $this->title = $title;
 
         return $this;
     }
@@ -64,14 +64,14 @@ class Book
         return $this;
     }
 
-    public function getGenero(): ?string
+    public function getGenre(): ?string
     {
-        return $this->genero;
+        return $this->genre;
     }
 
-    public function setGenero(string $genero): static
+    public function setGenre(string $genre): static
     {
-        $this->genero = $genero;
+        $this->genre = $genre;
 
         return $this;
     }

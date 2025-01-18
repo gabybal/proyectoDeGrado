@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Biblioteca{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+</head>
+<body>
+    {% if app.user %}
+    <!-- Mostrar el asider solo después de iniciar sesión -->
+    <aside>
+        <ul>
+            <li><a href="{{ path('app_home') }}">Menú</a></li>
+            <li><a href="{{ path('app_students_list') }}">Estudiantes</a></li>
+            <li><a href="{{ path('app_books_list') }}">Libros</a></li>
+            <li><a href="{{ path('app_prestamo') }}">Préstamos</a></li>
+            <li><a href="{{ path('app_prestamos_activos') }}">Préstamos Activos</a></li>
+            <li><a href="{{ path('app_historial_devoluciones') }}">Historial de Devoluciones</a></li>
+            <li><a href="{{ path('app_logout') }}">Cerrar Sesión</a></li>
+        </ul>
+    </aside>
+    {% endif %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
+    <main>
         {% block body %}{% endblock %}
-    </body>
+    </main>
+
+    {% block javascripts %}
+        <!-- Aquí puedes agregar los scripts comunes si es necesario -->
+    {% endblock %}
+</body>
 </html>

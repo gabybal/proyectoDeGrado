@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Libros{% endblock %}
+
+{% block body %}
+<h1>Lista de Libros</h1>
+
+{# Mostrar mensajes flash de éxito #}
+{% for flash_message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ flash_message }}
+    </div>
+{% endfor %}
+
+{# Mostrar mensajes flash de error #}
+{% for flash_message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ flash_message }}
+    </div>
+{% endfor %}
+
+{# Formulario de búsqueda con un solo campo para título, autor y género #}
+<form method="get" action="{{ path('app_books_list') }}">
+    <input type="text" name="search" value="{{ search }}" placeholder="Buscar por título, autor o género" />
+    <button type="submit" class="btn btn-secondary">Buscar</button>
+</form>
+
+<a href="{{ path('app_book') }}" class="btn btn-primary">Agregar Libro</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Autor</th>
+            <th>Género</th>
+            <th>Acciones</th> <!-- Columna para las acciones -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.id }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.autor }}</td>
+            <td>{{ book.genre }}</td>
+            <td>
+                <!-- Botón para eliminar libro -->
+                <a href="{{ path('app_book_delete', {'id': book.id}) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este libro?')">Eliminar</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">No hay libros registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

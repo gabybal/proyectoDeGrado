@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de Estudiantes{% endblock %}
+
+{% block body %}
+<h1>Lista de Estudiantes</h1>
+<a href="{{ path('app_student') }}" class="btn btn-primary">Agregar Estudiante</a>
+
+{# Mostrar mensajes flash si existen #}
+{% for flash_message in app.flashes('success') %}
+    <div class="alert alert-success">{{ flash_message }}</div>
+{% endfor %}
+{% for flash_message in app.flashes('error') %}
+    <div class="alert alert-danger">{{ flash_message }}</div>
+{% endfor %}
+
+<!-- Formulario de búsqueda -->
+<form method="get" action="{{ path('app_students_list') }}" class="mb-3">
+    <div class="form-group">
+        <input type="text" name="search" value="{{ app.request.query.get('search') }}" class="form-control" placeholder="Buscar por nombre o cédula">
+    </div>
+    <button type="submit" class="btn btn-secondary mt-2">Buscar</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Cédula</th>
+            <th>Acciones</th> <!-- Columna de acciones -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.nombre }}</td>
+            <td>{{ student.cedula }}</td>
+            <td>
+                <!-- Botón para eliminar estudiante -->
+                <a href="{{ path('app_student_delete', {'id': student.id}) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este estudiante?')">Eliminar</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="4">No hay estudiantes registrados.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

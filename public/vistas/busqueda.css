@@ -1,0 +1,17 @@
+#searchResults {
+    margin-top: 10px;
+}
+
+#searchResults p {
+    padding: 5px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+#loadingMessage {
+    font-style: italic;
+    color: #888;
+    margin-top: 10px;
+}

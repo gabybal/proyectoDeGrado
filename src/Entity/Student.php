@@ -6,6 +6,7 @@ use App\Repository\StudentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 class Student
@@ -15,8 +16,8 @@ class Student
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $cedula = null;
+    #[ORM\Column(type: "string")]
+    private ?string $cedula = null;
 
     #[ORM\Column(length: 100)]
     private ?string $nombre = null;
@@ -37,12 +38,12 @@ class Student
         return $this->id;
     }
 
-    public function getCedula(): ?int
+    public function getCedula(): ?string
     {
         return $this->cedula;
     }
 
-    public function setCedula(int $cedula): static
+    public function setCedula(string $cedula): static
     {
         $this->cedula = $cedula;
 
@@ -82,7 +83,7 @@ class Student
     public function removePrestamo(Prestamo $prestamo): static
     {
         if ($this->prestamos->removeElement($prestamo)) {
-            // set the owning side to null (unless already changed)
+             
             if ($prestamo->getStudent() === $this) {
                 $prestamo->setStudent(null);
             }

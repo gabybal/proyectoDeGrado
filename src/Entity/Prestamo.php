@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\PrestamoRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\PrestamoRepository;
+
 
 #[ORM\Entity(repositoryClass: PrestamoRepository::class)]
 class Prestamo
@@ -21,11 +22,11 @@ class Prestamo
     #[ORM\JoinColumn(nullable: false)]
     private ?Book $book = null;
 
-    #[ORM\Column]
-    private ?int $fechaPrestamo = null;
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $fechaPrestamo = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $fechaDevolucion = null;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $fechaDevolucion = null;
 
     public function getId(): ?int
     {
@@ -40,7 +41,7 @@ class Prestamo
     public function setStudent(?Student $student): static
     {
         $this->student = $student;
-
+        
         return $this;
     }
 
@@ -56,27 +57,33 @@ class Prestamo
         return $this;
     }
 
-    public function getFechaPrestamo(): ?int
+    public function getFechaPrestamo(): ?\DateTimeInterface
     {
         return $this->fechaPrestamo;
     }
 
-    public function setFechaPrestamo(int $fechaPrestamo): static
+    public function setFechaPrestamo(\DateTimeInterface $fechaPrestamo): static
     {
         $this->fechaPrestamo = $fechaPrestamo;
 
         return $this;
     }
 
-    public function getFechaDevolucion(): ?int
+    public function getFechaDevolucion(): ?\DateTimeInterface
     {
         return $this->fechaDevolucion;
     }
 
-    public function setFechaDevolucion(?int $fechaDevolucion): static
+    public function setFechaDevolucion(?\DateTimeInterface $fechaDevolucion): static
     {
         $this->fechaDevolucion = $fechaDevolucion;
 
         return $this;
+    }
+
+    // Método para determinar si el libro está prestado
+    public function estaPrestado(): bool
+    {
+        return $this->fechaDevolucion === null;
     }
 }

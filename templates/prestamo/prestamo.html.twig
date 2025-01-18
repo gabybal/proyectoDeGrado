@@ -1,18 +1,71 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nuevo Préstamo{% endblock %}
+{% block title %}Formulario de Préstamo{% endblock %}
 
 {% block body %}
-    <h1>Registrar Nuevo Préstamo</h1>
+<h1>Formulario de Préstamo</h1>
 
-    {{ form_start(form) }}
-        {{ form_row(form.student) }}
-        {{ form_row(form.book) }}
-        {{ form_row(form.fechaPrestamo) }}
-        {{ form_row(form.fechaDevolucion) }}
-        
-        <button class="btn btn-primary">Registrar</button>
-    {{ form_end(form) }}
+{# Mensajes Flash #}
+{% for flash_message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ flash_message }}
+    </div>
+{% endfor %}
 
-    <script src="{{ asset('js/prestamo.js') }}"></script>
+{% for flash_message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ flash_message }}
+    </div>
+{% endfor %}
+
+{{ form_start(form) }}
+    {{ form_row(form.book, { 'attr': { 'class': 'book-search' } }) }}
+    <div class="form-group">
+        <label for="autor">Autor</label>
+        <input type="text" id="autor" class="form-control" readonly="readonly" value="{{ form.book.vars.data ? form.book.vars.data.autor : '' }}">
+    </div>
+    <div class="form-group">
+        <label for="genre">Género</label>
+        <input type="text" id="genre" class="form-control" readonly="readonly" value="{{ form.book.vars.data ? form.book.vars.data.genre : '' }}">
+    </div>
+    {{ form_row(form.student, { 'attr': { 'class': 'student-search' } }) }}
+    <div class="form-group">
+        <label for="nombre">Nombre Estudiante</label>
+        <input type="text" id="nombre" class="form-control" readonly="readonly">
+    </div>
+    {{ form_row(form.fechaPrestamo) }}
+    {{ form_row(form.fechaDevolucion) }}
+    <button type="submit" class="btn btn-primary">Realizar Préstamo</button>
+{{ form_end(form) }}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/autocompletar.js') }}"></script>
+    <script>
+        // Autocompletar nombre del estudiante al ingresar cédula
+        document.getElementById('prestamo_student').addEventListener('input', function() {
+            var cedula = this.value;
+            if (cedula) {
+                fetch('/api/student/' + cedula)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('nombre').value = data.nombre;
+                    });
+            }
+        });
+
+        // Autocompletar autor y género al seleccionar un libro
+        document.getElementById('prestamo_book').addEventListener('change', function() {
+            var bookId = this.value;
+            if (bookId) {
+                fetch('/api/book/' + bookId)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('autor').value = data.autor;
+                        document.getElementById('genre').value = data.genre;
+                    });
+            }
+        });
+    </script>
+{% endblock %}
 {% endblock %}

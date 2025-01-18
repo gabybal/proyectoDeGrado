@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Préstamos Activos{% endblock %}
+
+{% block body %}
+<h1>Préstamos Activos</h1>
+
+{# Mostrar mensajes flash de éxito #}
+{% for flash_message in app.flashes('success') %}
+    <div class="alert alert-success">
+        {{ flash_message }}
+    </div>
+{% endfor %}
+
+{# Mostrar mensajes flash de error #}
+{% for flash_message in app.flashes('error') %}
+    <div class="alert alert-danger">
+        {{ flash_message }}
+    </div>
+{% endfor %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Estudiante</th>
+            <th>Libro</th>
+            <th>Fecha de Préstamo</th>
+            <th>Fecha de Devolución</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for prestamo in prestamos %}
+        <tr>
+            <td>{{ prestamo.student.name }}</td>
+            <td>{{ prestamo.book.title }}</td>
+            <td>{{ prestamo.fechaPrestamo | date('Y-m-d') }}</td>
+            <td>{{ prestamo.fechaDevolucion ? prestamo.fechaDevolucion | date('Y-m-d') : 'Pendiente' }}</td>
+            <td>
+                {% if not prestamo.fechaDevolucion %}
+                    <a href="{{ path('app_prestamo_devolver', {'id': prestamo.id}) }}" class="btn btn-warning">Devolver</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="5">No hay préstamos activos.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
