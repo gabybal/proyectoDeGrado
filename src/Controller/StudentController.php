@@ -83,5 +83,36 @@ class StudentController extends AbstractController
 
         return $this->redirectToRoute('app_students_list');
     }
+
+    // Ruta para editar un estudiante
+    #[Route('/student/{id}/edit', name: 'app_student_edit')]
+    public function edit(int $id, Request $request, EntityManagerInterface $entityManager): Response
+   {
+    $student = $entityManager->getRepository(Student::class)->find($id);
+
+    if (!$student) {
+        $this->addFlash('error', 'El estudiante no fue encontrado.');
+        return $this->redirectToRoute('app_students_list');
+    }
+
+    $form = $this->createForm(StudentFormType::class, $student);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        try {
+            $entityManager->flush();
+            $this->addFlash('success', 'Estudiante actualizado correctamente.');
+            return $this->redirectToRoute('app_students_list');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Error al actualizar el estudiante: ' . $e->getMessage());
+        }
+    }
+
+    return $this->render('student/edit.html.twig', [
+        'form' => $form->createView(),
+        'student' => $student
+    ]);
+   }
+
 }
 

@@ -6,6 +6,7 @@ use App\Repository\BookRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BookRepository::class)]
 class Book
@@ -16,12 +17,23 @@ class Book
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "El título del libro no puede estar vacío.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "El título del libro no puede exceder los 255 caracteres."
+    )]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "El autor del libro no puede estar vacío.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "El nombre del autor no puede exceder los 255 caracteres."
+    )]
     private ?string $autor = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "El género del libro no puede estar vacío.")]
     private ?string $genre = null;
 
     /**
@@ -105,4 +117,6 @@ class Book
 
         return $this;
     }
+
+    
 }

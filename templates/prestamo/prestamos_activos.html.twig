@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Préstamos Activos{% endblock %}
+{% block title %}Préstamos activos{% endblock %}
 
 {% block body %}
-<h1>Préstamos Activos</h1>
+<h1>Préstamos activos</h1>
 
 {# Mostrar mensajes flash de éxito #}
 {% for flash_message in app.flashes('success') %}
@@ -24,15 +24,15 @@
         <tr>
             <th>Estudiante</th>
             <th>Libro</th>
-            <th>Fecha de Préstamo</th>
-            <th>Fecha de Devolución</th>
+            <th>Fecha de préstamo</th>
+            <th>Fecha de devolución</th>
             <th>Acciones</th>
         </tr>
     </thead>
     <tbody>
         {% for prestamo in prestamos %}
         <tr>
-            <td>{{ prestamo.student.name }}</td>
+            <td>{{ prestamo.student.nombre }}</td>
             <td>{{ prestamo.book.title }}</td>
             <td>{{ prestamo.fechaPrestamo | date('Y-m-d') }}</td>
             <td>{{ prestamo.fechaDevolucion ? prestamo.fechaDevolucion | date('Y-m-d') : 'Pendiente' }}</td>

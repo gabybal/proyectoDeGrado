@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Lista de Estudiantes{% endblock %}
+{% block title %}Lista de estudiantes{% endblock %}
 
 {% block body %}
-<h1>Lista de Estudiantes</h1>
-<a href="{{ path('app_student') }}" class="btn btn-primary">Agregar Estudiante</a>
+<h1>Lista de estudiantes</h1>
+<a href="{{ path('app_student') }}" class="btn btn-primary">Agregar estudiante</a>
 
 {# Mostrar mensajes flash si existen #}
 {% for flash_message in app.flashes('success') %}
@@ -38,9 +38,13 @@
             <td>{{ student.nombre }}</td>
             <td>{{ student.cedula }}</td>
             <td>
-                <!-- Botón para eliminar estudiante -->
-                <a href="{{ path('app_student_delete', {'id': student.id}) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este estudiante?')">Eliminar</a>
+             <!-- Botón para editar estudiante -->
+             <a href="{{ path('app_student_edit', {'id': student.id}) }}" class="btn btn-warning">Editar</a>
+
+             <!-- Botón para eliminar estudiante -->
+            <a href="{{ path('app_student_delete', {'id': student.id}) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este estudiante?')">Eliminar</a>
             </td>
+
         </tr>
         {% else %}
         <tr>

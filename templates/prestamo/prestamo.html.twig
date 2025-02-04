@@ -1,71 +1,132 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Formulario de Préstamo{% endblock %}
-
-{% block body %}
-<h1>Formulario de Préstamo</h1>
-
-{# Mensajes Flash #}
-{% for flash_message in app.flashes('success') %}
-    <div class="alert alert-success">
-        {{ flash_message }}
-    </div>
-{% endfor %}
-
-{% for flash_message in app.flashes('error') %}
-    <div class="alert alert-danger">
-        {{ flash_message }}
-    </div>
-{% endfor %}
-
-{{ form_start(form) }}
-    {{ form_row(form.book, { 'attr': { 'class': 'book-search' } }) }}
-    <div class="form-group">
-        <label for="autor">Autor</label>
-        <input type="text" id="autor" class="form-control" readonly="readonly" value="{{ form.book.vars.data ? form.book.vars.data.autor : '' }}">
-    </div>
-    <div class="form-group">
-        <label for="genre">Género</label>
-        <input type="text" id="genre" class="form-control" readonly="readonly" value="{{ form.book.vars.data ? form.book.vars.data.genre : '' }}">
-    </div>
-    {{ form_row(form.student, { 'attr': { 'class': 'student-search' } }) }}
-    <div class="form-group">
-        <label for="nombre">Nombre Estudiante</label>
-        <input type="text" id="nombre" class="form-control" readonly="readonly">
-    </div>
-    {{ form_row(form.fechaPrestamo) }}
-    {{ form_row(form.fechaDevolucion) }}
-    <button type="submit" class="btn btn-primary">Realizar Préstamo</button>
-{{ form_end(form) }}
-
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/autocompletar.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  {# Asegúrate de cargar jQuery primero #}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    
     <script>
-        // Autocompletar nombre del estudiante al ingresar cédula
-        document.getElementById('prestamo_student').addEventListener('input', function() {
-            var cedula = this.value;
-            if (cedula) {
-                fetch('/api/student/' + cedula)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('nombre').value = data.nombre;
-                    });
-            }
-        });
+        $(document).ready(function() {
+            // Autocompletado para estudiantes
+            $('.student-search').select2({
+                ajax: {
+                    url: '{{ path('search_students') }}',
+                    dataType: 'json',
+                    processResults: function (data) {
+                        return {
+                            results: data.map(function (student) {
+                                return {
+                                    id: student.id,
+                                    text: student.nombre
+                                };
+                            })
+                        };
+                    }
+                }
+            });
 
-        // Autocompletar autor y género al seleccionar un libro
-        document.getElementById('prestamo_book').addEventListener('change', function() {
-            var bookId = this.value;
-            if (bookId) {
-                fetch('/api/book/' + bookId)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('autor').value = data.autor;
-                        document.getElementById('genre').value = data.genre;
-                    });
-            }
+            // Autocompletado para libros
+            $('.book-search').select2({
+                ajax: {
+                    url: '{{ path('search_books') }}',
+                    dataType: 'json',
+                    processResults: function (data) {
+                        return {
+                            results: data.map(function (book) {
+                                return {
+                                    id: book.id,
+                                    text: book.title
+                                };
+                            })
+                        };
+                    }
+                }
+            });
+
+            // Cuando se seleccione un libro, obtener sus datos
+            $('.book-search').on('select2:select', function (e) {
+                var bookId = e.params.data.id;
+                $.ajax({
+                    url: '/book-details/' + bookId,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#autor').val(data.autor);
+                        $('#genre').val(data.genre);
+                        $('#prestamo_book').val(bookId); // Guardar el ID en el campo oculto
+                    }
+                });
+            });
+
+            // Cuando se seleccione un estudiante, obtener sus datos
+            $('.student-search').on('select2:select', function (e) {
+                var studentId = e.params.data.id;
+                $.ajax({
+                    url: '/student-details/' + studentId,
+                    method: 'GET',
+                    success: function(data) {
+                        $('#nombre').val(data.nombre);
+                        $('#prestamo_student').val(studentId); // Guardar el ID en el campo oculto
+                    }
+                });
+            });
         });
     </script>
 {% endblock %}
+
+{% block body %}
+    <h1>Formulario de préstamo</h1>
+
+    {# Mensajes Flash #}
+    {% for flash_message in app.flashes('success') %}
+        <div class="alert alert-success">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+
+    {% for flash_message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+
+    {{ form_start(form) }}
+
+    <fieldset>
+        <legend>Detalles del libro</legend>
+        {{ form_row(form.book, { 'label':'Libro' ,'attr': { 'class': 'book-search', 'id': 'book', 'name': 'book' } }) }}
+        <div class="form-group">
+            <label for="autor">Autor</label>
+            <input type="text" id="autor" name="autor" class="form-control" readonly="readonly" 
+                   value="{{ form.book.vars.data ? form.book.vars.data.autor : '' }}">
+        </div>
+        <div class="form-group">
+            <label for="genre">Género</label>
+            <input type="text" id="genre" name="genre" class="form-control" readonly="readonly" 
+                   value="{{ form.book.vars.data ? form.book.vars.data.genre : '' }}">
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Detalles del estudiante</legend>
+        {{ form_row(form.student, {'label':'Estudiante', 'attr': { 'class': 'student-search', 'id': 'cedula', 'name': 'cedula' } }) }}
+        <div class="form-group">
+            <label for="nombre">Cedula del estudiante</label>
+            <input type="text" id="nombre" name="nombre" class="form-control" readonly="readonly">
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Fechas del préstamo</legend>
+        {{ form_row(form.fechaPrestamo) }}
+        {{ form_row(form.fechaDevolucion) }}
+    </fieldset>
+
+    {# Campos ocultos para guardar los IDs #}
+    <input type="hidden" id="prestamo_student" name="prestamo_student" value="{{ form.student.vars.value ? form.student.vars.value.id : '' }}">
+    <input type="hidden" id="prestamo_book" name="prestamo_book" value="{{ form.book.vars.value ? form.book.vars.value.id : '' }}">
+
+    <button type="submit" class="btn btn-primary">Realizar préstamo</button>
+
+    {{ form_end(form) }}
 {% endblock %}

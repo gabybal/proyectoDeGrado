@@ -1,26 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Historial de Devoluciones{% endblock %}
+{% block title %}Historial de devoluciones{% endblock %}
 
 {% block body %}
-<h1>Historial de Devoluciones</h1>
+<h1>Historial de devoluciones</h1>
 
 <table class="table">
     <thead>
         <tr>
             <th>Estudiante</th>
             <th>Libro</th>
-            <th>Fecha de Préstamo</th>
-            <th>Fecha de Devolución</th>
+            <th>Fecha de préstamo</th>
+            <th>Fecha de devolución</th>
         </tr>
     </thead>
     <tbody>
-        {% for devolucion in devoluciones %}
+        {% for prestamo in prestamos %}
         <tr>
-            <td>{{ devolucion.student.name }}</td>
-            <td>{{ devolucion.book.title }}</td>
-            <td>{{ devolucion.fechaPrestamo | date('Y-m-d') }}</td>
-            <td>{{ devolucion.fechaDevolucion | date('Y-m-d') }}</td>
+            <td>{{ prestamo.student.nombre }}</td>
+            <td>{{ prestamo.book.title }}</td>
+            <td>{{ prestamo.fechaPrestamo | date('Y-m-d') }}</td>
+            <td>{{ prestamo.fechaDevolucion | date('Y-m-d') }}</td>
         </tr>
         {% else %}
         <tr>

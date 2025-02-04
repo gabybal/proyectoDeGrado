@@ -17,6 +17,15 @@ class Student
     private ?int $id = null;
 
     #[ORM\Column(type: "string")]
+    #[Assert\Length(
+        min: 10,
+        max: 10,
+        exactMessage: "La cédula debe tener exactamente 10 dígitos."
+    )]
+    #[Assert\Regex(
+        pattern: "/^\d{10}$/",
+        message: "La cédula solo debe contener números y debe ser de 10 dígitos."
+    )]
     private ?string $cedula = null;
 
     #[ORM\Column(length: 100)]

@@ -41,7 +41,7 @@ class Prestamo
     public function setStudent(?Student $student): static
     {
         $this->student = $student;
-        
+
         return $this;
     }
 
@@ -77,13 +77,14 @@ class Prestamo
     public function setFechaDevolucion(?\DateTimeInterface $fechaDevolucion): static
     {
         $this->fechaDevolucion = $fechaDevolucion;
-
+        
         return $this;
     }
 
     // Método para determinar si el libro está prestado
     public function estaPrestado(): bool
     {
+        // Si no tiene fecha de devolución, se considera prestado
         return $this->fechaDevolucion === null;
     }
 }

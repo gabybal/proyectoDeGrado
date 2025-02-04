@@ -1,4 +1,4 @@
-window.validarCedula = function(parametro) {
+function validarCedula(parametro) {
     var cedula = parametro;
 
     // Comprobamos si la cédula tiene exactamente 10 caracteres

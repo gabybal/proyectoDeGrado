@@ -5,6 +5,8 @@
     <title>{% block title %}Biblioteca{% endblock %}</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
+<script src="{{ asset('js/generos.js') }}"></script>
+
 <body>
     {% if app.user %}
     <!-- Mostrar el asider solo después de iniciar sesión -->
@@ -12,11 +14,19 @@
         <ul>
             <li><a href="{{ path('app_home') }}">Menú</a></li>
             <li><a href="{{ path('app_students_list') }}">Estudiantes</a></li>
-            <li><a href="{{ path('app_books_list') }}">Libros</a></li>
+            <!-- Libros con menú desplegable -->
+           <li class="nav-item dropdown">
+              <a href="#" class="nav-link dropdown-toggle" id="librosDropdown" role="button">
+                 Libros
+              </a>
+               <ul class="dropdown-menu" id="generosLista" style="display: none;">
+                 <!-- Se llenará dinámicamente con AJAX -->
+               </ul>
+            </li>
             <li><a href="{{ path('app_prestamo') }}">Préstamos</a></li>
-            <li><a href="{{ path('app_prestamos_activos') }}">Préstamos Activos</a></li>
-            <li><a href="{{ path('app_historial_devoluciones') }}">Historial de Devoluciones</a></li>
-            <li><a href="{{ path('app_logout') }}">Cerrar Sesión</a></li>
+            <li><a href="{{ path('app_prestamos_activos') }}">Préstamos activos</a></li>
+            <li><a href="{{ path('app_historial_devoluciones') }}">Historial de devoluciones</a></li>
+            <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>
         </ul>
     </aside>
     {% endif %}

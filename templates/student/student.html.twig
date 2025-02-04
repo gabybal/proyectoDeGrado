@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Registrar Estudiante{% endblock %}
+{% block title %}Registrar estudiante{% endblock %}
 
 {% block body %}
-    <h1>Registrar Estudiante</h1>
+    <h1>Registrar estudiante</h1>
 
     {# Mostrar errores globales si los hay #}
     {% if form.vars.errors|length > 0 %}
@@ -27,11 +27,11 @@
             {% endfor %}
         </div>
 
-        <button type="submit" class="btn btn-primary">Registrar Estudiante</button>
+        <button type="submit" class="btn btn-primary">Registrar estudiante</button>
     {{ form_end(form) }}
 
     {# Incluir el archivo de validación de cédula #}
-    <script src="/CedulaValidator.js"></script>
+    <script src="{{ asset('js/CedulaValidator.js') }}"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
