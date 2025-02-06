@@ -1,0 +1,28 @@
+/* Estilos específicos para la página de préstamos */
+.prestamo-form {
+    background-color: var(--color-quinary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prestamo-form h1 {
+    color: var(--color-tertiary);
+}
+
+.prestamo-form .form-group {
+    margin-bottom: 15px;
+}
+
+.prestamo-form .form-control {
+    border: 1px solid var(--color-secondary);
+}
+
+.prestamo-form .btn-primary {
+    background-color: var(--color-secondary);
+    border: none;
+}
+
+.prestamo-form .btn-primary:hover {
+    background-color: var(--color-tertiary);
+}

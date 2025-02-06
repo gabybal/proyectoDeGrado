@@ -1,9 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Menú principal{% endblock %}
+{% block title %}Menú Principal{% endblock %}
 
-{% block body %}
-<h1>Bienvenido al Menú Principal</h1>
-<!-- Aquí puedes agregar el contenido de las estadísticas -->
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 {% endblock %}
 
+{% block body %}
+    <header>
+        <h1>Estadísticas de la Biblioteca</h1>
+        <button onclick="window.print()" class="btn-print">Imprimir Estadísticas</button>
+    </header>
+
+    <section class="estadisticas">
+        <article class="grafico">
+            <header></header>
+            <canvas id="graficoGeneros"></canvas>
+        </article>
+        <article class="grafico">
+            <header></header>
+            <canvas id="graficoLibros"></canvas>
+        </article>
+        <article class="grafico">
+            <header></header>
+            <canvas id="graficoAutores"></canvas>
+        </article>
+        <article class="grafico">
+            <header></header>
+            <canvas id="graficoEstudiantes"></canvas>
+        </article>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script src="{{ asset('js/estadisticas.js') }}"></script>
+{% endblock %}

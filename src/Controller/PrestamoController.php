@@ -104,16 +104,16 @@ class PrestamoController extends AbstractController
         $form->handleRequest($request);  // Maneja la solicitud
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Verificar si ya existe un préstamo para ese libro y estudiante
+            // Verificar si ya existe un préstamo para ese libro sin devolver
             $existingPrestamo = $entityManager->getRepository(Prestamo::class)
                 ->findOneBy([
-                    'student' => $prestamo->getStudent(),
                     'book' => $prestamo->getBook(),
                     'fechaDevolucion' => null,
                 ]);
 
             if ($existingPrestamo) {
-                $this->addFlash('error', 'Este libro ya ha sido prestado al estudiante.');
+                $student = $existingPrestamo->getStudent();
+                $this->addFlash('error', 'Este libro ya ha sido prestado a ' . $student->getNombre() . ' y no ha sido devuelto.');
                 return $this->redirectToRoute('app_prestamo');
             }
 
@@ -166,7 +166,7 @@ class PrestamoController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'Libro devuelto correctamente.');
-        return $this->redirectToRoute('app_historial_devoluciones');
+        return $this->redirectToRoute('app_prestamos_activos');
     }
 
     // Ruta para ver historial de devoluciones

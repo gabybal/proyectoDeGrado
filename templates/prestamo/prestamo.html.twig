@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('prestamo') }}
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  {# Asegúrate de cargar jQuery primero #}
@@ -75,58 +80,60 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Formulario de préstamo</h1>
+    <div class="prestamo-form">
+        <h1>Formulario de préstamo</h1>
 
-    {# Mensajes Flash #}
-    {% for flash_message in app.flashes('success') %}
-        <div class="alert alert-success">
-            {{ flash_message }}
-        </div>
-    {% endfor %}
+        {# Mensajes Flash #}
+        {% for flash_message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ flash_message }}
+            </div>
+        {% endfor %}
 
-    {% for flash_message in app.flashes('error') %}
-        <div class="alert alert-danger">
-            {{ flash_message }}
-        </div>
-    {% endfor %}
+        {% for flash_message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ flash_message }}
+            </div>
+        {% endfor %}
 
-    {{ form_start(form) }}
+        {{ form_start(form) }}
 
-    <fieldset>
-        <legend>Detalles del libro</legend>
-        {{ form_row(form.book, { 'label':'Libro' ,'attr': { 'class': 'book-search', 'id': 'book', 'name': 'book' } }) }}
-        <div class="form-group">
-            <label for="autor">Autor</label>
-            <input type="text" id="autor" name="autor" class="form-control" readonly="readonly" 
-                   value="{{ form.book.vars.data ? form.book.vars.data.autor : '' }}">
-        </div>
-        <div class="form-group">
-            <label for="genre">Género</label>
-            <input type="text" id="genre" name="genre" class="form-control" readonly="readonly" 
-                   value="{{ form.book.vars.data ? form.book.vars.data.genre : '' }}">
-        </div>
-    </fieldset>
+        <fieldset>
+            <legend>Detalles del libro</legend>
+            {{ form_row(form.book, { 'label':'Libro' ,'attr': { 'class': 'book-search', 'id': 'book', 'name': 'book' } }) }}
+            <div class="form-group">
+                <label for="autor">Autor</label>
+                <input type="text" id="autor" name="autor" class="form-control" readonly="readonly" 
+                       value="{{ form.book.vars.data ? form.book.vars.data.autor : '' }}">
+            </div>
+            <div class="form-group">
+                <label for="genre">Género</label>
+                <input type="text" id="genre" name="genre" class="form-control" readonly="readonly" 
+                       value="{{ form.book.vars.data ? form.book.vars.data.genre : '' }}">
+            </div>
+        </fieldset>
 
-    <fieldset>
-        <legend>Detalles del estudiante</legend>
-        {{ form_row(form.student, {'label':'Estudiante', 'attr': { 'class': 'student-search', 'id': 'cedula', 'name': 'cedula' } }) }}
-        <div class="form-group">
-            <label for="nombre">Cedula del estudiante</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" readonly="readonly">
-        </div>
-    </fieldset>
+        <fieldset>
+            <legend>Detalles del estudiante</legend>
+            {{ form_row(form.student, {'label':'Estudiante', 'attr': { 'class': 'student-search', 'id': 'cedula', 'name': 'cedula' } }) }}
+            <div class="form-group">
+                <label for="nombre">Cedula del estudiante</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" readonly="readonly">
+            </div>
+        </fieldset>
 
-    <fieldset>
-        <legend>Fechas del préstamo</legend>
-        {{ form_row(form.fechaPrestamo) }}
-        {{ form_row(form.fechaDevolucion) }}
-    </fieldset>
+        <fieldset>
+            <legend>Fechas del préstamo</legend>
+            {{ form_row(form.fechaPrestamo) }}
+            {{ form_row(form.fechaDevolucion) }}
+        </fieldset>
 
-    {# Campos ocultos para guardar los IDs #}
-    <input type="hidden" id="prestamo_student" name="prestamo_student" value="{{ form.student.vars.value ? form.student.vars.value.id : '' }}">
-    <input type="hidden" id="prestamo_book" name="prestamo_book" value="{{ form.book.vars.value ? form.book.vars.value.id : '' }}">
+        {# Campos ocultos para guardar los IDs #}
+        <input type="hidden" id="prestamo_student" name="prestamo_student" value="{{ form.student.vars.value ? form.student.vars.value.id : '' }}">
+        <input type="hidden" id="prestamo_book" name="prestamo_book" value="{{ form.book.vars.value ? form.book.vars.value.id : '' }}">
 
-    <button type="submit" class="btn btn-primary">Realizar préstamo</button>
+        <button type="submit" class="btn btn-primary">Realizar préstamo</button>
 
-    {{ form_end(form) }}
+        {{ form_end(form) }}
+    </div>
 {% endblock %}
