@@ -1,4 +1,3 @@
-console.log("entramos a peticiones.js");
 async function fetchData(url, method = 'GET', data = null) {
     const options = {
         method: method,
@@ -30,3 +29,5 @@ async function getData(url) {
 async function postData(url, data) {
     return await fetchData(url, 'POST', data);
 }
+
+export { getData, postData };

@@ -27,7 +27,7 @@ Encore
     .addEntry('generos', './assets/js/generos.js')
     .addEntry('peticiones', './assets/js/generales/peticiones.js')
     .addEntry('cedulaValidator', './assets/js/students/cedulaValidator.js')
-    .addEntry('students', './assets/js/students/lista.js')
+    .addEntry('students', './assets/js/students/students.js')
     .addEntry('autocompletar', './assets/js/prestamos/autocompletar.js')
     .addEntry('estadisticas', './assets/js/estadisticas.js')
     .addStyleEntry('prestamo', './assets/css/prestamo.css')
