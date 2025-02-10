@@ -12,8 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.7",
+    "jquery": "^3.7.1",
     "select2": "^4.1.0-rc.0"
   },
   "devDependencies": {
@@ -21,6 +23,8 @@
     "bootstrap": "^4.5.2",
     "core-js": "^3.6.5",
     "regenerator-runtime": "^0.13.7",
+    "sass": "^1.84.0",
+    "sass-loader": "^12.0.0",
     "webpack-notifier": "^1.8.0"
   }
 }

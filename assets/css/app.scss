@@ -75,3 +75,8 @@ body {
 .btn-print:hover {
     background-color: var(--color-tertiary);
 }
+
+/* Ruta: assets/styles/app.scss */
+@import "bootstrap/scss/bootstrap";
+
+/* Tus estilos personalizados... */
