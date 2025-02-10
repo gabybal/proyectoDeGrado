@@ -7,76 +7,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  {# Asegúrate de cargar jQuery primero #}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    
-    <script>
-        $(document).ready(function() {
-            // Autocompletado para estudiantes
-            $('.student-search').select2({
-                ajax: {
-                    url: '{{ path('search_students') }}',
-                    dataType: 'json',
-                    processResults: function (data) {
-                        return {
-                            results: data.map(function (student) {
-                                return {
-                                    id: student.id,
-                                    text: student.nombre
-                                };
-                            })
-                        };
-                    }
-                }
-            });
-
-            // Autocompletado para libros
-            $('.book-search').select2({
-                ajax: {
-                    url: '{{ path('search_books') }}',
-                    dataType: 'json',
-                    processResults: function (data) {
-                        return {
-                            results: data.map(function (book) {
-                                return {
-                                    id: book.id,
-                                    text: book.title
-                                };
-                            })
-                        };
-                    }
-                }
-            });
-
-            // Cuando se seleccione un libro, obtener sus datos
-            $('.book-search').on('select2:select', function (e) {
-                var bookId = e.params.data.id;
-                $.ajax({
-                    url: '/book-details/' + bookId,
-                    method: 'GET',
-                    success: function(data) {
-                        $('#autor').val(data.autor);
-                        $('#genre').val(data.genre);
-                        $('#prestamo_book').val(bookId); // Guardar el ID en el campo oculto
-                    }
-                });
-            });
-
-            // Cuando se seleccione un estudiante, obtener sus datos
-            $('.student-search').on('select2:select', function (e) {
-                var studentId = e.params.data.id;
-                $.ajax({
-                    url: '/student-details/' + studentId,
-                    method: 'GET',
-                    success: function(data) {
-                        $('#nombre').val(data.nombre);
-                        $('#prestamo_student').val(studentId); // Guardar el ID en el campo oculto
-                    }
-                });
-            });
-        });
-    </script>
+    {{ encore_entry_script_tags('autocompletar') }}
 {% endblock %}
 
 {% block body %}
@@ -85,22 +16,17 @@
 
         {# Mensajes Flash #}
         {% for flash_message in app.flashes('success') %}
-            <div class="alert alert-success">
-                {{ flash_message }}
-            </div>
+            <div class="alert alert-success">{{ flash_message }}</div>
         {% endfor %}
 
         {% for flash_message in app.flashes('error') %}
-            <div class="alert alert-danger">
-                {{ flash_message }}
-            </div>
+            <div class="alert alert-danger">{{ flash_message }}</div>
         {% endfor %}
 
         {{ form_start(form) }}
 
         <fieldset>
             <legend>Detalles del libro</legend>
-            {{ form_row(form.book, { 'label':'Libro' ,'attr': { 'class': 'book-search', 'id': 'book', 'name': 'book' } }) }}
             <div class="form-group">
                 <label for="autor">Autor</label>
                 <input type="text" id="autor" name="autor" class="form-control" readonly="readonly" 
@@ -115,9 +41,9 @@
 
         <fieldset>
             <legend>Detalles del estudiante</legend>
-            {{ form_row(form.student, {'label':'Estudiante', 'attr': { 'class': 'student-search', 'id': 'cedula', 'name': 'cedula' } }) }}
+            {{ form_row(form.student, { 'attr': { 'class': 'student-search', 'id': 'cedula', 'name': 'cedula' } }) }}
             <div class="form-group">
-                <label for="nombre">Cedula del estudiante</label>
+                <label for="nombre">Nombre del estudiante</label>
                 <input type="text" id="nombre" name="nombre" class="form-control" readonly="readonly">
             </div>
         </fieldset>

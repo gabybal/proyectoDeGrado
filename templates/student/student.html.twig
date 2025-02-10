@@ -31,24 +31,7 @@
     {{ form_end(form) }}
 
     {# Incluir el archivo de validación de cédula #}
-    <script src="{{ asset('js/CedulaValidator.js') }}"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.querySelector('form');
-            const cedulaInput = document.getElementById('student_form_cedula');  // Verifica si el ID es correcto
-
-            form.addEventListener('submit', function (event) {
-                console.log('Validando cédula: ', cedulaInput.value);
-                // Si la cédula no es válida, se previene el envío del formulario
-                if (!validarCedula(cedulaInput.value)) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation(); // Evitar que Turbo.js procese el evento
-                    alert('La cédula ingresada no es válida. Por favor, verifica los datos.');
-                }
-            });
-        });
-    </script>
+    {{ encore_entry_script_tags('cedulaValidator') }}
 
     {# Mensajes flash de éxito #}
     {% for flash_message in app.flashes('success') %}

@@ -72,10 +72,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Evitar el envío del formulario si la cédula no es válida
         if (!validarCedula(cedulaInput.value)) {
             event.preventDefault();
+            event.stopImmediatePropagation(); // Evitar que Turbo.js procese el evento
             alert('La cédula ingresada no es válida. Por favor, verifica los datos.');
         } else {
             console.log('Cédula válida');
         }
     });
 });
-

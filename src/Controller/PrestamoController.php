@@ -24,7 +24,7 @@ class PrestamoController extends AbstractController
         $searchTerm = $request->query->get('q'); // Obtener el término de búsqueda
         $students = $entityManager->getRepository(Student::class)
             ->createQueryBuilder('s')
-            ->where('s.cedula LIKE :searchTerm')
+            ->where('s.cedula LIKE :searchTerm OR s.nombre LIKE :searchTerm')
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
             ->getQuery()
             ->getResult();
@@ -51,7 +51,7 @@ class PrestamoController extends AbstractController
         }
 
         return new JsonResponse([
-            'nombre' => $student->getCedula(),
+            'nombre' => $student->getNombre(),
         ]);
     }
 

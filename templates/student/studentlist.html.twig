@@ -54,3 +54,9 @@
     </tbody>
 </table>
 {% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('peticiones') }}
+    {{ encore_entry_script_tags('students') }}
+
+{% endblock %}

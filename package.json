@@ -13,7 +13,8 @@
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "bootstrap": "^5.3.3",
-    "chart.js": "^4.4.7"
+    "chart.js": "^4.4.7",
+    "select2": "^4.1.0-rc.0"
   },
   "devDependencies": {
     "@symfony/webpack-encore": "^1.8.2",

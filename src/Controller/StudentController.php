@@ -9,9 +9,35 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Student;
 use App\Form\StudentFormType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StudentController extends AbstractController
 {
+    // Ruta para listar estudiantes retornando un json
+    #[Route('/students/list', name: 'app_students_list_json')]
+    public function listJson(EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Obtener todos los estudiantes
+        $students = $entityManager->getRepository(Student::class)->findAll();
+
+        // Convertir los datos de los estudiantes a un array
+        $data = [];
+        if (!$students) {
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
+        foreach ($students as $student) {
+            $data[] = [
+                'id' => $student->getId(),
+                'nombre' => $student->getNombre(),
+                'cedula' => $student->getCedula()
+            ];
+        }
+
+        // Crear una respuesta JSON
+        return $this->json($data);
+    }
+
     // Ruta para listar estudiantes
     #[Route('/students', name: 'app_students_list')]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
@@ -29,7 +55,7 @@ class StudentController extends AbstractController
                 ->getResult();
         } else {
             // Si no hay búsqueda, obtener todos los estudiantes
-            $students = $entityManager->getRepository(Student::class)->findAll();
+            $students = $entityManager->getRepository(Student::class)->findBy([],['id'=>'ASC']);
         }
 
         // Renderizar la vista con la lista de estudiantes

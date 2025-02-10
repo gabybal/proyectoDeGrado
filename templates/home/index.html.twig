@@ -4,29 +4,28 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
 {% endblock %}
 
 {% block body %}
-    <header>
+    <header class="bg-dark text-white text-center py-3">
         <h1>Estadísticas de la Biblioteca</h1>
-        <button onclick="window.print()" class="btn-print">Imprimir Estadísticas</button>
+        <button onclick="window.print()" class="btn btn-primary mt-3">Imprimir Estadísticas</button>
     </header>
 
-    <section class="estadisticas">
-        <article class="grafico">
+    <section class="estadisticas row mt-4">
+        <article class="grafico col-md-6 col-lg-4 mb-4">
             <header></header>
             <canvas id="graficoGeneros"></canvas>
         </article>
-        <article class="grafico">
+        <article class="grafico col-md-6 col-lg-4 mb-4">
             <header></header>
             <canvas id="graficoLibros"></canvas>
         </article>
-        <article class="grafico">
+        <article class="grafico col-md-6 col-lg-4 mb-4">
             <header></header>
             <canvas id="graficoAutores"></canvas>
         </article>
-        <article class="grafico">
+        <article class="grafico col-md-6 col-lg-4 mb-4">
             <header></header>
             <canvas id="graficoEstudiantes"></canvas>
         </article>
@@ -37,5 +36,6 @@
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-    <script src="{{ asset('js/estadisticas.js') }}"></script>
+    {{ encore_entry_script_tags('app') }}
+    {{ encore_entry_script_tags('estadisticas') }}
 {% endblock %}

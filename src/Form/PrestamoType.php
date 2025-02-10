@@ -9,17 +9,12 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\DateType; 
-
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class PrestamoType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $studentUrl = $options['student_autocomplete_url'] ?? null;  // Obtener URL pasada como opción
-        $bookUrl = $options['book_autocomplete_url'] ?? null;  // Obtener URL pasada como opción
-    
         $builder
             ->add('fechaPrestamo', DateType::class, [
                 'widget' => 'single_text',
@@ -33,34 +28,31 @@ class PrestamoType extends AbstractType
             ])
             ->add('student', EntityType::class, [
                 'class' => Student::class,
-                'choice_label' => 'nombre',
-                'label' => 'Estudiante',
-                'placeholder' => 'Buscar por C.I...',
+                'choice_label' => 'cedula', // Mostrar la cédula en lugar del nombre
+                'label' => false, // No mostrar etiqueta
                 'required' => true,
                 'attr' => [
                     'class' => 'student-search',
-                    'data-autocomplete-url' => $studentUrl // Pasas la URL aquí
+                    'data-placeholder' => 'Escribe la C.I. del estudiante...',
                 ],
             ])
             ->add('book', EntityType::class, [
                 'class' => Book::class,
-                'choice_label' => 'title',
-                'label' => 'Libro',
-                'placeholder' => 'Buscar por titulo...',
+                'choice_label' => 'title', // Mostrar el título del libro
+                'label' => false, // No mostrar etiqueta
                 'required' => true,
                 'attr' => [
                     'class' => 'book-search',
-                    'data-autocomplete-url' => $bookUrl // Pasas la URL aquí
+                    'data-placeholder' => 'Escribe el título del libro...',
                 ],
             ]);
     }
-    
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Prestamo::class,
-            'student_autocomplete_url' => null, // Agregar una opción para las URLs
-            'book_autocomplete_url' => null,    // Agregar una opción para las URLs
         ]);
     }
-}    
+}
+
