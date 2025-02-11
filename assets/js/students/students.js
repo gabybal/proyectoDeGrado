@@ -1,22 +1,38 @@
-import { getData, postData } from '../generales/peticiones';
+import { conectar } from '../generales/peticiones';
 import Swal from 'sweetalert2';
 
 let ListaEstudiantes = [];
 const tbody = document.getElementById('tableBody');
-const personForm = document.forms.personForm;
+const personForm = document.getElementById('addStudentForm');
 
 
 (async function() {
-    ListaEstudiantes = await getData('/students/list');
+    ListaEstudiantes = await conectar('/students/list');
     console.log(ListaEstudiantes, tbody);
     await cargarEstudiantes(tbody, ListaEstudiantes);
 })();
 
-
-
-
-
-
+personForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(personForm);
+    const nombre = formData.get('nombre');
+    const cedula = formData.get('cedula');
+    //Valida si la cédula ya existe
+    const cedulaExistente = ListaEstudiantes.find(persona => persona.cedula == cedula);
+    if (cedulaExistente) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Ingreso inválido',
+            text: 'La cédula ya existe',
+        });
+        return;
+    }
+    const persona = { nombre, cedula };
+    await addPerson(persona);
+    personForm.reset();
+    ListaEstudiantes = await conectar('/students/list');
+    await cargarEstudiantes(tbody, ListaEstudiantes);
+});
 
 async function cargarEstudiantes(tableElement, personas) {
     tableElement.innerHTML = '';
@@ -105,14 +121,19 @@ async function handleDelete(persona) {
 
 async function deletePerson(id) {
     console.log('Eliminar persona con ID:', id);
-    await postData(`/students/delete/${id}`);
-    ListaEstudiantes = await getData('/students/list');
+    await conectar(`/students/delete/${id}`);
+    ListaEstudiantes = await conectar('/students/list');
     await cargarEstudiantes(tbody, ListaEstudiantes);
 }
 
 async function addPerson(persona) {
     console.log('Agregar persona:', persona);
-    await postData('/students/add', persona);
-    ListaEstudiantes = await getData('/students/list');
-    await cargarEstudiantes(tbody, ListaEstudiantes);
+    const data = new FormData();
+    data.append('nombre', persona.nombre);
+    data.append('cedula', persona.cedula);
+
+    const response = await conectar('/students/add', data);
+    console.log('Respuesta:', response);
+
+    
 }

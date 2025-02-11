@@ -4,7 +4,6 @@
 
 {% block body %}
 <h1>Lista de estudiantes</h1>
-<a href="{{ path('app_student') }}" class="btn btn-primary">Agregar estudiante</a>
 
 {# Mostrar mensajes flash si existen #}
 {% for flash_message in app.flashes('success') %}
@@ -14,11 +13,12 @@
     <div class="alert alert-danger">{{ flash_message }}</div>
 {% endfor %}
 
-<!-- Formulario de búsqueda -->
 <div class="input-group mb-3">
-    <input type="text" class="form-control" placeholder="Nombre del estudiante" aria-label="Nombre del estudiante" id="studentNameInput">
-    <input type="text" class="form-control" placeholder="Cédula del estudiante" aria-label="Cédula del estudiante" id="studentCedulaInput">
-    <button class="btn btn-success" type="button" id="addStudentButton">Agregar</button>
+    <form id="addStudentForm" class="input-group mb-3">
+        <input type="text" name="nombre" class="form-control" required placeholder="Nombre del estudiante" aria-label="Nombre del estudiante" id="studentNameInput" required>
+        <input type="text" name="cedula" class="form-control" required placeholder="Cédula del estudiante" aria-label="Cédula del estudiante" id="studentCedulaInput" required>
+        <button type="submit" class="btn btn-success">Agregar</button>
+    </form>
 </div>
 
 

@@ -13,6 +13,33 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class StudentController extends AbstractController
 {
+    //Ruta para agregar estudiantes retornando un json
+    #[Route('/students/add', name: 'app_student_json')]
+    public function addStudentJson(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $student = new Student();
+        $data = $request->request->all();
+        $student->setNombre($data['nombre']);
+        $student->setCedula($data['cedula']);
+        
+        try {
+            $entityManager->persist($student);
+            $entityManager->flush();
+            $response = [
+            'status' => 'success',
+            'message' => 'Estudiante agregado correctamente.'
+            ];
+        } catch (\Exception $e) {
+            $response = [
+            'status' => 'error',
+            'message' => 'Error al agregar el estudiante: ' . $e->getMessage()
+            ];
+        }
+
+        return new JsonResponse($response);
+
+
+    }
     // Ruta para listar estudiantes retornando un json
     #[Route('/students/list', name: 'app_students_list_json')]
     public function listJson(EntityManagerInterface $entityManager): JsonResponse

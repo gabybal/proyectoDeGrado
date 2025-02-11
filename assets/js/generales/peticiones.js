@@ -1,33 +1,41 @@
-async function fetchData(url, method = 'GET', data = null) {
-    const options = {
-        method: method,
-        headers: { 
-            'Content-Type': 'application/json'
-        }
-    };
-
-    if (data) {
-        options.body = JSON.stringify(data);
-    }
-
+//función asíncrona para conectar con controladores
+async function conectar(url, datos = null) {
     try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
+        const response = await fetch(url, {
+            method: 'POST',
+            body: datos
+        });
+        return response.json();
     } catch (error) {
-        console.error('Error:', error);
-        throw error;
+        console.log(error);
     }
 }
 
-async function getData(url) {
-    return await fetchData(url, 'GET');
+
+// función para realizar una solicitud GET
+async function fetchGet(url) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET'
+        });
+        return response.json();
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-async function postData(url, data) {
-    return await fetchData(url, 'POST', data);
+// función para realizar una solicitud POST
+async function fetchPost(url, datos = null) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: datos
+        });
+        return response.json();
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-export { getData, postData };
+//exportar funciones
+export { conectar, fetchGet, fetchPost };
