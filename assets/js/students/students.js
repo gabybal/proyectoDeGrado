@@ -1,18 +1,24 @@
 import { conectar } from '../generales/peticiones';
 import Swal from 'sweetalert2';
 
+// Lista de estudiantes
 let ListaEstudiantes = [];
+// Elementos del DOM
 const tbody = document.getElementById('tableBody');
 const personForm = document.getElementById('addStudentForm');
 const submitButton = personForm.querySelector('button[type="submit"]');
 let isEditing = false;
 let editingPersonId = null;
+const searchByNameInput = document.getElementById('searchByName');
+const searchByCedulaInput = document.getElementById('searchByCedula');
 
+// Cargar lista de estudiantes al iniciar
 (async function() {
     ListaEstudiantes = await conectar('/students/list');
     await cargarEstudiantes(tbody, ListaEstudiantes);
 })();
 
+// Manejar el evento de envío del formulario
 personForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(personForm);
@@ -20,6 +26,7 @@ personForm.addEventListener('submit', async (event) => {
     const cedula = formData.get('cedula');
 
     if (isEditing) {
+        // Editar estudiante existente
         const response = await editPerson({ id: editingPersonId, nombre, cedula });
         if (response.status === 'error') {
             Swal.fire({
@@ -38,6 +45,7 @@ personForm.addEventListener('submit', async (event) => {
         editingPersonId = null;
         submitButton.textContent = 'Agregar';
     } else {
+        // Agregar nuevo estudiante
         const cedulaExistente = ListaEstudiantes.find(persona => persona.cedula == cedula);
         if (cedulaExistente) {
             Swal.fire({
@@ -51,11 +59,37 @@ personForm.addEventListener('submit', async (event) => {
         await addPerson(persona);
     }
 
+    // Resetear formulario y recargar lista de estudiantes
     personForm.reset();
     ListaEstudiantes = await conectar('/students/list');
     await cargarEstudiantes(tbody, ListaEstudiantes);
 });
 
+// Filtrar estudiantes por nombre
+searchByNameInput.addEventListener('input', () => {
+    filterStudents();
+});
+
+// Filtrar estudiantes por cédula
+searchByCedulaInput.addEventListener('input', () => {
+    filterStudents();
+});
+
+// Filtrar estudiantes según los criterios de búsqueda
+function filterStudents() {
+    const nameFilter = searchByNameInput.value.toLowerCase();
+    const cedulaFilter = searchByCedulaInput.value.toLowerCase();
+
+    const filteredStudents = ListaEstudiantes.filter(persona => {
+        const nameMatch = persona.nombre.toLowerCase().includes(nameFilter);
+        const cedulaMatch = persona.cedula.toLowerCase().includes(cedulaFilter);
+        return nameMatch && cedulaMatch;
+    });
+
+    cargarEstudiantes(tbody, filteredStudents);
+}
+
+// Cargar estudiantes en la tabla
 async function cargarEstudiantes(tableElement, personas) {
     tableElement.innerHTML = '';
     if (personas.length === 0) {
@@ -68,6 +102,7 @@ async function cargarEstudiantes(tableElement, personas) {
     });
 }
 
+// Crear una fila de la tabla para un estudiante
 function createTableRow(persona) {
     const row = document.createElement('tr');
     ['index', 'nombre', 'cedula'].forEach((key) => {
@@ -82,6 +117,7 @@ function createTableRow(persona) {
     return row;
 }
 
+// Crear celda de acciones (editar/eliminar)
 function createActionCell(persona) {
     const actionCell = document.createElement('td');
 
@@ -94,6 +130,7 @@ function createActionCell(persona) {
     return actionCell;
 }
 
+// Crear botón de editar
 function createEditButton(persona) {
     const editButton = document.createElement('button');
     editButton.textContent = 'Editar';
@@ -109,6 +146,7 @@ function createEditButton(persona) {
     return editButton;
 }
 
+// Crear botón de eliminar
 function createDeleteButton(persona) {
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Eliminar';
@@ -119,6 +157,7 @@ function createDeleteButton(persona) {
     return deleteButton;
 }
 
+// Editar estudiante
 async function editPerson(persona) {
     const data = new FormData();
     data.append('id', persona.id);
@@ -127,6 +166,7 @@ async function editPerson(persona) {
     return await conectar('/students/edit', data);
 }
 
+// Manejar eliminación de estudiante
 async function handleDelete(persona) {
     const result = await Swal.fire({
         title: '¿Estás seguro?',
@@ -140,10 +180,10 @@ async function handleDelete(persona) {
 
     if (result.isConfirmed) {
         await deletePerson(persona.id);
-       
     }
 }
 
+// Eliminar estudiante
 async function deletePerson(id) {
     const data = new FormData();
     data.append('id', id);
@@ -153,7 +193,7 @@ async function deletePerson(id) {
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Hubo un error al eliminar la persona '+response.message,
+            text: 'Hubo un error al eliminar la persona ' + response.message,
         });
         return;
     }
@@ -166,6 +206,7 @@ async function deletePerson(id) {
     await cargarEstudiantes(tbody, ListaEstudiantes);
 }
 
+// Agregar nuevo estudiante
 async function addPerson(persona) {
     const data = new FormData();
     data.append('nombre', persona.nombre);
