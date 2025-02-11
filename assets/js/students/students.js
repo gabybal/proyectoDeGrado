@@ -4,11 +4,12 @@ import Swal from 'sweetalert2';
 let ListaEstudiantes = [];
 const tbody = document.getElementById('tableBody');
 const personForm = document.getElementById('addStudentForm');
-
+const submitButton = personForm.querySelector('button[type="submit"]');
+let isEditing = false;
+let editingPersonId = null;
 
 (async function() {
     ListaEstudiantes = await conectar('/students/list');
-    console.log(ListaEstudiantes, tbody);
     await cargarEstudiantes(tbody, ListaEstudiantes);
 })();
 
@@ -17,18 +18,39 @@ personForm.addEventListener('submit', async (event) => {
     const formData = new FormData(personForm);
     const nombre = formData.get('nombre');
     const cedula = formData.get('cedula');
-    //Valida si la cédula ya existe
-    const cedulaExistente = ListaEstudiantes.find(persona => persona.cedula == cedula);
-    if (cedulaExistente) {
+
+    if (isEditing) {
+        const response = await editPerson({ id: editingPersonId, nombre, cedula });
+        if (response.status === 'error') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al editar la persona',
+            });
+            return;
+        }
         Swal.fire({
-            icon: 'error',
-            title: 'Ingreso inválido',
-            text: 'La cédula ya existe',
+            icon: 'success',
+            title: 'Persona editada',
+            text: 'La persona ha sido editada con éxito',
         });
-        return;
+        isEditing = false;
+        editingPersonId = null;
+        submitButton.textContent = 'Agregar';
+    } else {
+        const cedulaExistente = ListaEstudiantes.find(persona => persona.cedula == cedula);
+        if (cedulaExistente) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Ingreso inválido',
+                text: 'La cédula ya existe',
+            });
+            return;
+        }
+        const persona = { nombre, cedula };
+        await addPerson(persona);
     }
-    const persona = { nombre, cedula };
-    await addPerson(persona);
+
     personForm.reset();
     ListaEstudiantes = await conectar('/students/list');
     await cargarEstudiantes(tbody, ListaEstudiantes);
@@ -78,7 +100,11 @@ function createEditButton(persona) {
     editButton.classList.add('btn', 'btn-primary', 'mr-2');
     editButton.style.marginRight = '10px';
     editButton.addEventListener('click', () => {
-        openEditModal(persona);
+        personForm.nombre.value = persona.nombre;
+        personForm.cedula.value = persona.cedula;
+        isEditing = true;
+        editingPersonId = persona.id;
+        submitButton.textContent = 'Actualizar';
     });
     return editButton;
 }
@@ -93,12 +119,15 @@ function createDeleteButton(persona) {
     return deleteButton;
 }
 
-function openEditModal(persona) {
-    console.log('Abrir modal para editar:', persona);
+async function editPerson(persona) {
+    const data = new FormData();
+    data.append('id', persona.id);
+    data.append('nombre', persona.nombre);
+    data.append('cedula', persona.cedula);
+    return await conectar('/students/edit', data);
 }
 
 async function handleDelete(persona) {
-    console.log('Eliminar persona:', persona);
     const result = await Swal.fire({
         title: '¿Estás seguro?',
         text: "¡No podrás revertir esto!",
@@ -111,29 +140,35 @@ async function handleDelete(persona) {
 
     if (result.isConfirmed) {
         await deletePerson(persona.id);
-        Swal.fire(
-            'Eliminado!',
-            'La persona ha sido eliminada.',
-            'success'
-        );
+       
     }
 }
 
 async function deletePerson(id) {
-    console.log('Eliminar persona con ID:', id);
-    await conectar(`/students/delete/${id}`);
+    const data = new FormData();
+    data.append('id', id);
+    const response = await conectar('/students/delete', data);
+    console.log(response);
+    if (response.status === 'error') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un error al eliminar la persona '+response.message,
+        });
+        return;
+    }
+    Swal.fire(
+        'Eliminado!',
+        'La persona ha sido eliminada.',
+        'success'
+    );
     ListaEstudiantes = await conectar('/students/list');
     await cargarEstudiantes(tbody, ListaEstudiantes);
 }
 
 async function addPerson(persona) {
-    console.log('Agregar persona:', persona);
     const data = new FormData();
     data.append('nombre', persona.nombre);
     data.append('cedula', persona.cedula);
-
     const response = await conectar('/students/add', data);
-    console.log('Respuesta:', response);
-
-    
 }

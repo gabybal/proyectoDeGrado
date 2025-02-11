@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Prestamo;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,6 +26,7 @@ class StudentController extends AbstractController
         try {
             $entityManager->persist($student);
             $entityManager->flush();
+
             $response = [
             'status' => 'success',
             'message' => 'Estudiante agregado correctamente.'
@@ -40,12 +42,86 @@ class StudentController extends AbstractController
 
 
     }
+
+    //ruta para editar estudiantes por post retornando un json
+    #[Route('/students/edit', name: 'app_student_edit_json')]
+    public function editStudentJson(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = $request->request->all();
+        //return new JsonResponse($data);
+        $student = $entityManager->getRepository(Student::class)->find($data['id']);
+        if (!$student) {
+            $response = [
+                'status' => 'error',
+                'message' => 'El estudiante no fue encontrado.'
+            ];
+        } else {
+            $student->setNombre($data['nombre']);
+            $student->setCedula($data['cedula']);
+
+            try {
+                $entityManager->persist($student);
+                $entityManager->flush();
+                $response = [
+                    'status' => 'success',
+                    'message' => 'Estudiante actualizado correctamente.'
+                ];
+            } catch (\Exception $e) {
+                $response = [
+                    'status' => 'error',
+                    'message' => 'Error al actualizar el estudiante: ' . $e->getMessage()
+                ];
+            }
+        }
+
+        return new JsonResponse($response);
+    }
+    //ruta para eliminar estudiantes por post retornando un json 
+    #[Route('/students/delete', name: 'app_student_delete_json')]
+    public function deleteStudentJson(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = $request->request->all();
+        $student = $entityManager->getRepository(Student::class)->find($data['id']);
+
+        if (!$student) {
+            $response = [
+                'status' => 'error',
+                'message' => 'El estudiante no fue encontrado.'
+            ];
+        } else {
+            try {
+                //valida que no exista en prestamos
+                $prestamos = $entityManager->getRepository(Prestamo::class)->findBy(['student' => $student->getId()]);
+                if ($prestamos) {
+                    $response = [
+                        'status' => 'error',
+                        'message' => 'El estudiante tiene préstamos asociados.'
+                    ];
+                    return new JsonResponse($response);
+                }
+                $entityManager->remove($student);
+                $entityManager->flush();
+                $response = [
+                    'status' => 'success',
+                    'message' => 'Estudiante eliminado correctamente.'
+                ];
+            } catch (\Exception $e) {
+                $response = [
+                    'status' => 'error',
+                    'message' => 'Error al eliminar el estudiante: ' . $e->getMessage()
+                ];
+            }
+        }
+
+        return new JsonResponse($response);
+    }
+
     // Ruta para listar estudiantes retornando un json
     #[Route('/students/list', name: 'app_students_list_json')]
     public function listJson(EntityManagerInterface $entityManager): JsonResponse
     {
         // Obtener todos los estudiantes
-        $students = $entityManager->getRepository(Student::class)->findAll();
+        $students = $entityManager->getRepository(Student::class)->findBy([],['id'=>'ASC']);
 
         // Convertir los datos de los estudiantes a un array
         $data = [];

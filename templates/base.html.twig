@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>{% block title %}Biblioteca{% endblock %}</title>
     {{ encore_entry_link_tags('app') }}
-
 </head>
 <body>
     {% if app.user %}
@@ -15,8 +14,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                
+            <ul class="navbar-nav mr-auto">
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_students_list') }}">Estudiantes</a></li>
                 <!-- Libros con menú desplegable -->
                 <li class="nav-item dropdown">
@@ -30,6 +28,8 @@
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_prestamo') }}">Préstamos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_prestamos_activos') }}">Préstamos activos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_historial_devoluciones') }}">Historial de devoluciones</a></li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_logout') }}">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -46,8 +46,14 @@
     {% endblock %}
     {{ encore_entry_script_tags('generos') }}
     
-    <footer class="bg-dark text-white text-center py-3">
-        <a href="https://www.facebook.com/colegiobernabedelarrauloficial?mibextid=ZbWKwL" class="text-white">&copy; 2025 Unidad Educativa Bernabe de Larraul</a>
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="mb-0">&copy; 2025 Unidad Educativa Bernabe de Larraul</p>
+                </div>
+            </div>
+        </div>
     </footer>
 </body>
 </html>
