@@ -3,60 +3,44 @@
 {% block title %}Lista de libros{% endblock %}
 
 {% block body %}
-<h1>Lista de libros</h1>
+<h1>Lista de libros{% if selectedGenre %} - Género: {{ selectedGenre }}{% endif %}</h1>
 
-{% if selectedGenre is defined %}
-    <h2>Libros del género: {{ selectedGenre }}</h2>
-{% endif %}
-
-{# Mensajes flash #}
+{# Mostrar mensajes flash si existen #}
 {% for flash_message in app.flashes('success') %}
-    <div class="alert alert-success">
-        {{ flash_message }}
-    </div>
+    <div class="alert alert-success">{{ flash_message }}</div>
 {% endfor %}
 
 {% for flash_message in app.flashes('error') %}
-    <div class="alert alert-danger">
-        {{ flash_message }}
-    </div>
+    <div class="alert alert-danger">{{ flash_message }}</div>
 {% endfor %}
 
-{# Formulario de búsqueda #}
-<form method="get" action="{{ path('app_books_list') }}">
-    <input type="text" name="search" value="{{ search }}" placeholder="Buscar por título, autor o género" />
-    <button type="submit" class="btn btn-secondary">Buscar</button>
-</form>
+<div class="input-group mb-3">
+    <form id="addBookForm" class="input-group mb-3">
+        <input type="text" name="title" class="form-control" required placeholder="Título del libro" aria-label="Título del libro" id="bookTitleInput" required>
+        <input type="text" name="autor" class="form-control" required placeholder="Autor del libro" aria-label="Autor del libro" id="bookAutorInput" required>
+        <input type="text" name="genre" class="form-control" required placeholder="Género del libro" aria-label="Género del libro" id="bookGenreInput" required>
+        <button type="submit" class="btn btn-success">Agregar</button>
+    </form>
+</div>
 
-<a href="{{ path('app_book') }}" class="btn btn-primary">Agregar libro</a>
-
-<table class="table">
+<table id="books-table" class="table">
     <thead>
         <tr>
             <th>ID</th>
-            <th>Título</th>
+            <th><input type="text" class="form-control" placeholder="Buscar por Título" id="searchByTitle"></th>
             <th>Autor</th>
             <th>Género</th>
-            <th>Acciones</th>
+            <th>Acciones</th> <!-- Columna de acciones -->
         </tr>
     </thead>
-    <tbody>
-        {% for book in books %}
-        <tr>
-            <td>{{ book.id }}</td>
-            <td>{{ book.title }}</td>
-            <td>{{ book.autor }}</td>
-            <td>{{ book.genre }}</td>
-            <td>
-                <a href="{{ path('app_book_edit', {'id': book.id}) }}" class="btn btn-warning">Editar</a>
-                <a href="{{ path('app_book_delete', {'id': book.id}) }}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar este libro?')">Eliminar</a>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="5">No hay libros registrados.</td>
-        </tr>
-        {% endfor %}
+    <tbody id="tableBody">
+        <!-- Los libros se cargarán aquí mediante AJAX -->
     </tbody>
 </table>
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('peticiones') }}
+    {{ encore_entry_script_tags('books') }}
+    {{ encore_entry_script_tags('generos') }}
 {% endblock %}

@@ -1,5 +1,7 @@
+import { cargarLibros, handleEdit, handleDelete } from './books.js';
 
-document.addEventListener("DOMContentLoaded", function () {
+// Función principal
+async function main() {
     let librosDropdown = document.getElementById("librosDropdown");
     let generosLista = document.getElementById("generosLista");
     let timeoutId;
@@ -22,7 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
                             let listItem = document.createElement("li");
                             listItem.classList.add("dropdown-item");
                             let link = document.createElement("a");
-                            link.href = "/books/genre/" + encodeURIComponent(genre.genre);
+                            link.href = "#";
+                            link.dataset.genre = genre.genre;
                             link.textContent = genre.genre;
                             listItem.appendChild(link);
                             generosLista.appendChild(listItem);
@@ -52,10 +55,26 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 500);
     });
 
+    // Manejar clic en un género
+    generosLista.addEventListener("click", function (event) {
+        if (event.target.tagName === 'A') {
+            event.preventDefault();
+            const genre = event.target.dataset.genre;
+            fetch(`/api/books/genre/${encodeURIComponent(genre)}`)
+                .then(response => response.json())
+                .then(books => {
+                    cargarLibros(books);
+                })
+                .catch(error => console.error("Error al cargar libros:", error));
+        }
+    });
+
     // Si hacen clic en "Libros", ir a la lista completa
     librosDropdown.addEventListener("click", function (event) {
         event.preventDefault(); // Evita comportamiento predeterminado
         window.location.href = "/books"; // Redirige a la lista de libros
     });
-});
+}
 
+// Llamar a la función principal
+main();

@@ -23,14 +23,14 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    .addEntry('app', './assets/js/app.js')
-    .addEntry('generos', './assets/js/generos.js')
-    .addEntry('peticiones', './assets/js/generales/peticiones.js')
+    .addEntry('app', './assets/js/app.js') 
+    .addEntry('peticiones', './assets/js/generales/peticiones.js') 
     .addEntry('cedulaValidator', './assets/js/students/cedulaValidator.js')
     .addEntry('students', './assets/js/students/students.js')
     .addEntry('autocompletar', './assets/js/prestamos/autocompletar.js')
     .addEntry('estadisticas', './assets/js/estadisticas.js')
-    .addStyleEntry('prestamo', './assets/css/prestamo.css')
+    .addEntry('books', './assets/js/books/books.js')
+    .addEntry('generos', './assets/js/books/generos.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

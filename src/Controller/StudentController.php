@@ -167,81 +167,9 @@ class StudentController extends AbstractController
         ]);
     }
 
-    // Ruta para agregar estudiantes
-    #[Route('/student', name: 'app_student')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $student = new Student();
-        $form = $this->createForm(StudentFormType::class, $student);
+    
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($student);
-            try {
-                $entityManager->flush();
-                $this->addFlash('success', 'Estudiante registrado correctamente.');
-                return $this->redirectToRoute('app_students_list');
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Error al guardar el estudiante: ' . $e->getMessage());
-            }
-        }
-
-        return $this->render('student/student.html.twig', [
-            'form' => $form->createView(),
-        ]);
-    }
-
-    // Ruta para eliminar un estudiante
-    #[Route('/student/delete/{id}', name: 'app_student_delete')]
-    public function delete(int $id, EntityManagerInterface $entityManager): Response
-    {
-        $student = $entityManager->getRepository(Student::class)->find($id);
-
-        if (!$student) {
-            $this->addFlash('error', 'El estudiante no fue encontrado.');
-        } else {
-            try {
-                $entityManager->remove($student);
-                $entityManager->flush();
-                $this->addFlash('success', 'Estudiante eliminado correctamente.');
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Error al eliminar el estudiante: ' . $e->getMessage());
-            }
-        }
-
-        return $this->redirectToRoute('app_students_list');
-    }
-
-    // Ruta para editar un estudiante
-    #[Route('/student/{id}/edit', name: 'app_student_edit')]
-    public function edit(int $id, Request $request, EntityManagerInterface $entityManager): Response
-   {
-    $student = $entityManager->getRepository(Student::class)->find($id);
-
-    if (!$student) {
-        $this->addFlash('error', 'El estudiante no fue encontrado.');
-        return $this->redirectToRoute('app_students_list');
-    }
-
-    $form = $this->createForm(StudentFormType::class, $student);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        try {
-            $entityManager->flush();
-            $this->addFlash('success', 'Estudiante actualizado correctamente.');
-            return $this->redirectToRoute('app_students_list');
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Error al actualizar el estudiante: ' . $e->getMessage());
-        }
-    }
-
-    return $this->render('student/edit.html.twig', [
-        'form' => $form->createView(),
-        'student' => $student
-    ]);
-   }
+   
 
    
 

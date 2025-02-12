@@ -2,6 +2,26 @@ import $ from 'jquery';
 import 'select2';
 
 $(document).ready(function() {
+    // Función para realizar la solicitud AJAX de manera asíncrona
+    async function fetchData(url, params) {
+        try {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    }
+
     // Autocompletado para estudiantes
     $('.student-search').select2({
         ajax: {
@@ -13,9 +33,10 @@ $(document).ready(function() {
                     q: params.term // Término de búsqueda
                 };
             },
-            processResults: function (data) {
+            processResults: async function (data) {
+                const results = await fetchData('/search/students', { q: data.term });
                 return {
-                    results: data.map(function (student) {
+                    results: results.map(function (student) {
                         return {
                             id: student.id,
                             text: student.cedula // Mostrar la cédula en lugar del nombre
@@ -47,9 +68,10 @@ $(document).ready(function() {
                     q: params.term // Término de búsqueda
                 };
             },
-            processResults: function (data) {
+            processResults: async function (data) {
+                const results = await fetchData('/search/books', { q: data.term });
                 return {
-                    results: data.map(function (book) {
+                    results: results.map(function (book) {
                         return {
                             id: book.id,
                             text: book.title // Mostrar el título del libro
@@ -71,29 +93,27 @@ $(document).ready(function() {
     });
 
     // Cuando se seleccione un libro, obtener sus datos
-    $('.book-search').on('select2:select', function (e) {
+    $('.book-search').on('select2:select', async function (e) {
         var bookId = e.params.data.id;
-        $.ajax({
-            url: '/book-details/' + bookId,
-            method: 'GET',
-            success: function(data) {
-                $('#autor').val(data.autor);
-                $('#genre').val(data.genre);
-                $('#prestamo_book').val(bookId); // Guardar el ID en el campo oculto
-            }
-        });
+        try {
+            const data = await fetchData(`/book-details/${bookId}`);
+            $('#autor').val(data.autor);
+            $('#genre').val(data.genre);
+            $('#prestamo_book').val(bookId); // Guardar el ID en el campo oculto
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
 
     // Cuando se seleccione un estudiante, obtener sus datos
-    $('.student-search').on('select2:select', function (e) {
+    $('.student-search').on('select2:select', async function (e) {
         var studentId = e.params.data.id;
-        $.ajax({
-            url: '/student-details/' + studentId,
-            method: 'GET',
-            success: function(data) {
-                $('#nombre').val(data.nombre);
-                $('#prestamo_student').val(studentId); // Guardar el ID en el campo oculto
-            }
-        });
+        try {
+            const data = await fetchData(`/student-details/${studentId}`);
+            $('#nombre').val(data.nombre);
+            $('#prestamo_student').val(studentId); // Guardar el ID en el campo oculto
+        } catch (error) {
+            console.error('Error:', error);
+        }
     });
 });

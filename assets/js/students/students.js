@@ -1,5 +1,6 @@
 import { conectar } from '../generales/peticiones';
 import Swal from 'sweetalert2';
+import { validarCedula } from './cedulaValidator';  // Importar la función validarCedula
 
 // Lista de estudiantes
 let ListaEstudiantes = [];
@@ -47,6 +48,14 @@ personForm.addEventListener('submit', async (event) => {
     } else {
         // Agregar nuevo estudiante
         const cedulaExistente = ListaEstudiantes.find(persona => persona.cedula == cedula);
+        if (!validarCedula(cedula)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Ingreso inválido',
+                text: 'La cédula ingresada no es válida',
+            });
+            return;
+        }
         if (cedulaExistente) {
             Swal.fire({
                 icon: 'error',
@@ -212,4 +221,17 @@ async function addPerson(persona) {
     data.append('nombre', persona.nombre);
     data.append('cedula', persona.cedula);
     const response = await conectar('/students/add', data);
+    if (response.status === 'error') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.message,
+        });
+        return;
+    }
+    Swal.fire({
+        icon: 'success',
+        title: 'Persona agregada',
+        text: response.message,
+    });
 }

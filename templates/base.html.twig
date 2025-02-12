@@ -14,11 +14,12 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
+            <ul class="navbar-nav">
+                
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_students_list') }}">Estudiantes</a></li>
                 <!-- Libros con menú desplegable -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="librosDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="{{ path('app_books_list') }}" id="librosDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Libros
                     </a>
                     <div class="dropdown-menu" aria-labelledby="librosDropdown" id="generosLista">
@@ -28,8 +29,6 @@
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_prestamo') }}">Préstamos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_prestamos_activos') }}">Préstamos activos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_historial_devoluciones') }}">Historial de devoluciones</a></li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_logout') }}">Cerrar sesión</a></li>
             </ul>
         </div>
@@ -39,21 +38,18 @@
     <main class="container mt-5 pt-5">
         {% block body %}{% endblock %}
     </main>
+
     {{ encore_entry_script_tags('app') }}
     {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     {% endblock %}
     {{ encore_entry_script_tags('generos') }}
+    {{ encore_entry_script_tags('peticiones') }}
+    {{ encore_entry_script_tags('books') }}
     
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <p class="mb-0">&copy; 2025 Unidad Educativa Bernabe de Larraul</p>
-                </div>
-            </div>
-        </div>
+    <footer class="bg-dark text-white text-center py-3">
+        <a href="https://www.facebook.com/colegiobernabedelarrauloficial?mibextid=ZbWKwL" class="text-white">&copy; 2025 Unidad Educativa Bernabe de Larraul</a>
     </footer>
 </body>
 </html>

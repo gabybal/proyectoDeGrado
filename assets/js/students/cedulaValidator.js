@@ -79,3 +79,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+export { validarCedula };   // Exporta la función validarCedula para ser utilizada en otros módulos
