@@ -28,6 +28,9 @@ class Prestamo
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $fechaDevolucion = null;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $comentario = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,6 +81,18 @@ class Prestamo
     {
         $this->fechaDevolucion = $fechaDevolucion;
         
+        return $this;
+    }
+    
+    public function getComentario(): ?string
+    {
+        return $this->comentario;
+    }
+
+    public function setComentario(?string $comentario): static
+    {
+        $this->comentario = $comentario;
+
         return $this;
     }
 

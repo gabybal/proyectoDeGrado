@@ -27,10 +27,11 @@ Encore
     .addEntry('peticiones', './assets/js/generales/peticiones.js') 
     .addEntry('cedulaValidator', './assets/js/students/cedulaValidator.js')
     .addEntry('students', './assets/js/students/students.js')
-    .addEntry('autocompletar', './assets/js/prestamos/autocompletar.js')
     .addEntry('estadisticas', './assets/js/estadisticas.js')
     .addEntry('books', './assets/js/books/books.js')
     .addEntry('generos', './assets/js/books/generos.js')
+    .addEntry('prestamos', './assets/js/prestamos/prestamos.js')
+    .addEntry('devoluciones', './assets/js/prestamos/devoluciones.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

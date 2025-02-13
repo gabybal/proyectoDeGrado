@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista de devoluciones{% endblock %}
+
+{% block body %}
+<h1>Lista de devoluciones</h1>
+
+<div class="input-group mb-3">
+    <input type="text" id="searchStudent" class="form-control" placeholder="Buscar por nombre de estudiante">
+    <input type="text" id="searchTitle" class="form-control" placeholder="Buscar por título">
+    <input type="date" id="searchDate" class="form-control" placeholder="Buscar por fecha de devolución">
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Estudiante</th>
+            <th>Libro</th>
+            <th>Fecha de Préstamo</th>
+            <th>Fecha de Devolución</th>
+            <th>Comentario</th>
+        </tr>
+    </thead>
+    <tbody id="devolucionesTableBody">
+    </tbody>
+</table>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('peticiones') }}
+    {{ encore_entry_script_tags('devoluciones') }}
+{% endblock %}
