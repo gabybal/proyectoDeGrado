@@ -3,42 +3,44 @@
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<div class="container d-flex justify-content-center align-items-center vh-100">
+<div class="container d-flex justify-content-center align-items-center vh-100 bg-light">
     <div class="col-md-6">
-        <form method="post" class="card p-4 shadow-sm">
-            {% if error %}
-                <div class="alert alert-danger">
-                    {{ error.messageKey|trans(error.messageData, 'security') }}
+        <div class="card p-4 shadow-lg border-0 rounded">
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="mb-3 text-center">
+                        You are logged in as <strong>{{ app.user.userIdentifier }}</strong>, <a href="{{ path('app_logout') }}">Logout</a>
+                    </div>
+                {% endif %}
+
+                <h1 class="h3 mb-3 font-weight-normal text-center">Please sign in</h1>
+                
+                <!-- Campo para el nombre de usuario -->
+                <div class="form-group">
+                    <label for="inputUsername">Username</label>
+                    <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" required autofocus>
                 </div>
-            {% endif %}
 
-            {% if app.user %}
-                <div class="mb-3">
-                    You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                <!-- Campo para la contraseña -->
+                <div class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
                 </div>
-            {% endif %}
 
-            <h1 class="h3 mb-3 font-weight-normal text-center">Please sign in</h1>
-            
-            <!-- Campo para el nombre de usuario -->
-            <div class="form-group">
-                <label for="inputUsername">Username</label>
-                <input type="text" value="{{ last_username }}" name="username" id="inputUsername" class="form-control" autocomplete="username" required autofocus>
-            </div>
+                <!-- Token CSRF (Ya está correcto en tu código) -->
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <!-- Campo para la contraseña -->
-            <div class="form-group">
-                <label for="inputPassword">Password</label>
-                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-            </div>
-
-            <!-- Token CSRF (Ya está correcto en tu código) -->
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-            <button class="btn btn-lg btn-primary btn-block mt-3" type="submit">
-                Sign in
-            </button>
-        </form>
+                <button class="btn btn-lg btn-primary btn-block mt-3" type="submit">
+                    Sign in
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

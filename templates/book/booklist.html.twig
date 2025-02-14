@@ -3,44 +3,34 @@
 {% block title %}Lista de libros{% endblock %}
 
 {% block body %}
-<h1>Lista de libros{% if selectedGenre %} - Género: {{ selectedGenre }}{% endif %}</h1>
-
-{# Mostrar mensajes flash si existen #}
-{% for flash_message in app.flashes('success') %}
-    <div class="alert alert-success">{{ flash_message }}</div>
-{% endfor %}
-
-{% for flash_message in app.flashes('error') %}
-    <div class="alert alert-danger">{{ flash_message }}</div>
-{% endfor %}
+<h1>Lista de libros</h1>
 
 <div class="input-group mb-3">
     <form id="addBookForm" class="input-group mb-3">
         <input type="text" name="title" class="form-control" required placeholder="Título del libro" aria-label="Título del libro" id="bookTitleInput" required>
-        <input type="text" name="autor" class="form-control" required placeholder="Autor del libro" aria-label="Autor del libro" id="bookAutorInput" required>
+        <input type="text" name="autor" class="form-control" required placeholder="Autor del libro" aria-label="Autor del libro" id="bookAuthorInput" required>
         <input type="text" name="genre" class="form-control" required placeholder="Género del libro" aria-label="Género del libro" id="bookGenreInput" required>
         <button type="submit" class="btn btn-success">Agregar</button>
     </form>
 </div>
 
-<table id="books-table" class="table">
+<table class="table">
     <thead>
         <tr>
             <th>ID</th>
-            <th><input type="text" class="form-control" placeholder="Buscar por Título" id="searchByTitle"></th>
-            <th>Autor</th>
-            <th>Género</th>
-            <th>Acciones</th> <!-- Columna de acciones -->
+            <th><input type="text" class="form-control" placeholder="Buscar por título" id="searchByTitle"></th>
+            <th><input type="text" class="form-control" placeholder="Buscar por autor" id="searchByAuthor"></th>
+            <th><input type="text" class="form-control" placeholder="Buscar por género" id="searchByGenre"></th>
+            <th>Acciones</th>
         </tr>
     </thead>
     <tbody id="tableBody">
-        <!-- Los libros se cargarán aquí mediante AJAX -->
     </tbody>
 </table>
+
 {% endblock %}
 
 {% block javascripts %}
     {{ encore_entry_script_tags('peticiones') }}
     {{ encore_entry_script_tags('books') }}
-    {{ encore_entry_script_tags('generos') }}
 {% endblock %}

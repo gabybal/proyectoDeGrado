@@ -15,18 +15,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_students_list') }}">Estudiantes</a></li>
-                <!-- Libros con menú desplegable -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="{{ path('app_books_list') }}" id="librosDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Libros
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="librosDropdown" id="generosLista">
-                        <!-- Se llenará dinámicamente con AJAX -->
-                    </div>
-                </li>
-               
+                 <li class="nav-item"><a class="nav-link" href="{{ path('app_books_view') }}">Libros</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_prestamos') }}">Préstamos</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_devoluciones') }}">Historial de devoluciones</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ path('app_logout') }}">Cerrar sesión</a></li>
@@ -43,8 +33,9 @@
     {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    
     {% endblock %}
-    {{ encore_entry_script_tags('generos') }}
+    
     {{ encore_entry_script_tags('peticiones') }}
     {{ encore_entry_script_tags('books') }}
     

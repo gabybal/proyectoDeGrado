@@ -1,196 +1,157 @@
 <?php
-
+// src/Controller/BookController.php
 namespace App\Controller;
 
 use App\Entity\Book;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class BookController extends AbstractController
 {
-    // Ruta para listar libros
-    #[Route('/books', name: 'app_books_list')]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/books/add', name: 'app_book_add', methods: ['POST'])]
+    public function addBook(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Obtener el término de búsqueda desde la URL (si existe)
-        $search = $request->query->get('search');
+        $data = $request->request->all();
+        $book = new Book();
+        $book->setTitle($data['title']);
+        $book->setAutor($data['autor']);
+        $book->setGenre($data['genre']);
 
-        // Construir la consulta para buscar libros por título
-        if ($search) {
-            $books = $entityManager->getRepository(Book::class)
-                ->createQueryBuilder('b')
-                ->where('b.title LIKE :search')
-                ->setParameter('search', '%' . $search . '%')
-                ->getQuery()
-                ->getResult();
-        } else {
-            // Si no hay búsqueda, obtener todos los libros
-            $books = $entityManager->getRepository(Book::class)->findBy([], ['id' => 'ASC']);
+        try {
+            $entityManager->persist($book);
+            $entityManager->flush();
+
+            return new JsonResponse(['status' => 'success', 'message' => 'Book added successfully.']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Error adding book: ' . $e->getMessage()]);
+        }
+    }
+
+    #[Route('/books/edit', name: 'app_book_edit', methods: ['POST'])]
+    public function editBook(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $data = $request->request->all();
+        $book = $entityManager->getRepository(Book::class)->find($data['id']);
+
+        if (!$book) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Book not found.']);
         }
 
-        // Renderizar la vista con la lista de libros
-        return $this->render('book/booklist.html.twig', [
-            'books' => $books,
-            'search' => $search, // Pasar el término de búsqueda a la vista
-            'selectedGenre' => null // Asegurarse de que 'selectedGenre' esté definido
-        ]);
+        $book->setTitle($data['title']);
+        $book->setAutor($data['autor']);
+        $book->setGenre($data['genre']);
+
+        try {
+            $entityManager->persist($book);
+            $entityManager->flush();
+
+            return new JsonResponse(['status' => 'success', 'message' => 'Book updated successfully.']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Error updating book: ' . $e->getMessage()]);
+        }
     }
 
-    // Ruta para obtener géneros
-    #[Route('/api/genres', name: 'app_genres_list')]
-    public function getGenres(EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/books/delete', name: 'app_book_delete', methods: ['POST'])]
+    public function deleteBook(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $genres = $entityManager->getRepository(Book::class)
-            ->createQueryBuilder('b')
-            ->select('DISTINCT b.genre')
-            ->getQuery()
-            ->getResult();
+        $data = $request->request->all();
+        $book = $entityManager->getRepository(Book::class)->find($data['id']);
 
-        return $this->json($genres);
+        if (!$book) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Book not found.']);
+        }
+
+        try {
+            $entityManager->remove($book);
+            $entityManager->flush();
+
+            return new JsonResponse(['status' => 'success', 'message' => 'Book deleted successfully.']);
+        } catch (\Exception $e) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Error deleting book: ' . $e->getMessage()]);
+        }
     }
 
-    // Ruta para listar libros por género en formato JSON
-    #[Route('/api/books/genre/{genre}', name: 'app_books_by_genre_json')]
-    public function booksByGenreJson(string $genre, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/books/list', name: 'app_books_list', methods: ['GET'])]
+    public function listBooks(EntityManagerInterface $entityManager): JsonResponse
     {
-        $books = $entityManager->getRepository(Book::class)
-            ->findBy(['genre' => $genre]);
-
+        $books = $entityManager->getRepository(Book::class)->findAll();
         $data = [];
+
         foreach ($books as $book) {
             $data[] = [
                 'id' => $book->getId(),
                 'title' => $book->getTitle(),
                 'autor' => $book->getAutor(),
-                'genre' => $book->getGenre()
+                'genre' => $book->getGenre(),
             ];
         }
 
         return new JsonResponse($data);
     }
 
-    // Ruta para agregar libros retornando un json
-    #[Route('/books/add', name: 'app_book_add_json')]
-    public function addBookJson(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/books/genres', name: 'app_books_genres', methods: ['GET'])]
+    public function listGenres(EntityManagerInterface $entityManager): JsonResponse
     {
-        $book = new Book();
-        $data = $request->request->all();
-        $book->setTitle($data['title']);
-        $book->setAutor($data['autor']);
-        $book->setGenre($data['genre']);
-        
-        try {
-            $entityManager->persist($book);
-            $entityManager->flush();
+        $books = $entityManager->getRepository(Book::class)->findAll();
+        $genres = [];
 
-            $response = [
-                'status' => 'success',
-                'message' => 'Libro agregado correctamente.'
-            ];
-        } catch (\Exception $e) {
-            $response = [
-                'status' => 'error',
-                'message' => 'Error al agregar el libro: ' . $e->getMessage()
+        foreach ($books as $book) {
+            $genres[] = $book->getGenre();
+        }
+
+        $uniqueGenres = array_unique($genres);
+
+        return new JsonResponse($uniqueGenres);
+    }
+
+    #[Route('/books/view', name: 'app_books_view', methods: ['GET'])]
+    public function viewBooks(): Response
+    {
+        return $this->render('book/booklist.html.twig');
+    }
+
+    #[Route('/api/book/suggestions/{query}', name: 'app_book_suggestions', methods: ['GET'])]
+    public function getBookSuggestions(string $query, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $books = $entityManager->getRepository(Book::class)->createQueryBuilder('b')
+            ->where('b.title LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+
+        $suggestions = [];
+        foreach ($books as $book) {
+            $suggestions[] = [
+                'id' => $book->getId(),
+                'title' => $book->getTitle(),
             ];
         }
 
-        return new JsonResponse($response);
+        return new JsonResponse($suggestions);
     }
-
-    // Ruta para editar libros por post retornando un json
-    #[Route('/books/edit', name: 'app_book_edit_json')]
-    public function editBookJson(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    
+    #[Route('/books/search', name: 'app_book_search')]
+    public function searchBook(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        $data = $request->request->all();
-        $book = $entityManager->getRepository(Book::class)->find($data['id']);
-        if (!$book) {
-            $response = [
-                'status' => 'error',
-                'message' => 'El libro no fue encontrado.'
-            ];
-        } else {
-            $book->setTitle($data['title']);
-            $book->setAutor($data['autor']);
-            $book->setGenre($data['genre']);
+        $titulo = $request->query->get('title');
+        $books = $entityManager->getRepository(Book::class)->createQueryBuilder('b')
+            ->where('b.title LIKE :titulo')
+            ->setParameter('titulo', '%' . $titulo . '%')
+            ->getQuery()
+            ->getResult();
 
-            try {
-                $entityManager->persist($book);
-                $entityManager->flush();
-                $response = [
-                    'status' => 'success',
-                    'message' => 'Libro actualizado correctamente.'
-                ];
-            } catch (\Exception $e) {
-                $response = [
-                    'status' => 'error',
-                    'message' => 'Error al actualizar el libro: ' . $e->getMessage()
-                ];
-            }
-        }
-
-        return new JsonResponse($response);
-    }
-
-    // Ruta para eliminar libros por post retornando un json 
-    #[Route('/books/delete', name: 'app_book_delete_json')]
-    public function deleteBookJson(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $data = $request->request->all();
-        $book = $entityManager->getRepository(Book::class)->find($data['id']);
-
-        if (!$book) {
-            $response = [
-                'status' => 'error',
-                'message' => 'El libro no fue encontrado.'
-            ];
-        } else {
-            try {
-                $entityManager->remove($book);
-                $entityManager->flush();
-                $response = [
-                    'status' => 'success',
-                    'message' => 'Libro eliminado correctamente.'
-                ];
-            } catch (\Exception $e) {
-                $response = [
-                    'status' => 'error',
-                    'message' => 'Error al eliminar el libro: ' . $e->getMessage()
-                ];
-            }
-        }
-
-        return new JsonResponse($response);
-    }
-
-    // Ruta para listar libros retornando un json
-    #[Route('/books/list', name: 'app_books_list_json')]
-    public function listJson(EntityManagerInterface $entityManager): JsonResponse
-    {
-        // Obtener todos los libros
-        $books = $entityManager->getRepository(Book::class)->findBy([], ['id' => 'ASC']);
-
-        // Convertir los datos de los libros a un array
         $data = [];
-        if (!$books) {
-            return new JsonResponse($data, Response::HTTP_OK);
-        }
-
         foreach ($books as $book) {
             $data[] = [
                 'id' => $book->getId(),
-                'title' => $book->getTitle(),
-                'autor' => $book->getAutor(),
-                'genre' => $book->getGenre()
+                'titulo' => $book->getTitle(),
             ];
         }
 
-        // Crear una respuesta JSON
-        return $this->json($data);
+        return new JsonResponse($data);
     }
 }
-
-

@@ -45,4 +45,24 @@ class ApiController extends AbstractController
             'autor' => $book->getAutor()
         ]);
     }
+
+    #[Route('/api/book/suggestions/{query}', name: 'app_book_suggestions', methods: ['GET'])]
+    public function getBookSuggestions(string $query, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $books = $entityManager->getRepository(Book::class)->createQueryBuilder('b')
+            ->where('b.title LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->getQuery()
+            ->getResult();
+
+        $suggestions = [];
+        foreach ($books as $book) {
+            $suggestions[] = [
+                'id' => $book->getId(),
+                'title' => $book->getTitle(),
+            ];
+        }
+
+        return new JsonResponse($suggestions);
+    }
 }

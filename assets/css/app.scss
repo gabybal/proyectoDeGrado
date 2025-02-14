@@ -1,10 +1,10 @@
 /* Paleta de colores personalizada */
 :root {
-    --color-primary: #0D4563;
+    --color-primary: #0e2734;
     --color-secondary: #377B82;
     --color-tertiary: #53317D;
     --color-quaternary: #7A5DC7;
-    --color-quinary: #dec6e9;
+    --color-quinary: #e9d8f1;
 }
 
 /* Estilos personalizados */
@@ -33,12 +33,7 @@ body {
     text-align: center;
 }
 
-.estadisticas {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
+
 
 .grafico {
     background: var(--color-quinary);
@@ -61,19 +56,21 @@ body {
 }
 
 .btn-print {
-    display: block;
-    margin: 20px auto;
-    padding: 10px 20px;
+    display: inline-block;
+    margin: 10px auto;
+    padding: 8px 16px;
     background-color: var(--color-secondary);
     color: white;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid var(--color-tertiary);
+    border-radius: 3px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn-print:hover {
     background-color: var(--color-tertiary);
+    color: var(--color-quinary);
 }
 
 /* Ruta: assets/styles/app.scss */

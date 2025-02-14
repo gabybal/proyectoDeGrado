@@ -29,7 +29,6 @@ Encore
     .addEntry('students', './assets/js/students/students.js')
     .addEntry('estadisticas', './assets/js/estadisticas.js')
     .addEntry('books', './assets/js/books/books.js')
-    .addEntry('generos', './assets/js/books/generos.js')
     .addEntry('prestamos', './assets/js/prestamos/prestamos.js')
     .addEntry('devoluciones', './assets/js/prestamos/devoluciones.js')
 

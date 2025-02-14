@@ -1,137 +1,189 @@
-import { conectar } from '../generales/peticiones';
+import { conectar, fetchGet } from '../generales/peticiones';
 import Swal from 'sweetalert2';
 
-// Lista de libros
 let ListaLibros = [];
-// Elementos del DOM
 const tbody = document.getElementById('tableBody');
 const bookForm = document.getElementById('addBookForm');
 const submitButton = bookForm.querySelector('button[type="submit"]');
 let isEditing = false;
 let editingBookId = null;
 const searchByTitleInput = document.getElementById('searchByTitle');
+const searchByAuthorInput = document.getElementById('searchByAuthor');
+const searchByGenreInput = document.getElementById('searchByGenre');
 
-// Función principal
-async function main() {
-    // Cargar lista de libros al iniciar
-    ListaLibros = await conectar('/books/list');
-    await cargarLibros(ListaLibros);
+(async function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const genre = urlParams.get('genre');
+    if (genre) {
+        ListaLibros = await fetchGet(`/books/list?genre=${genre}`);
+    } else {
+        ListaLibros = await fetchGet('/books/list');
+    }
+    await cargarLibros(tbody, ListaLibros);
+})();
 
-    // Manejar el evento de envío del formulario
-    bookForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const formData = new FormData(bookForm);
-        const title = formData.get('title');
-        const autor = formData.get('autor');
-        const genre = formData.get('genre');
+bookForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(bookForm);
+    const title = formData.get('title');
+    const autor = formData.get('autor');
+    const genre = formData.get('genre');
 
-        if (isEditing) {
-            // Editar libro existente
-            const response = await editBook({ id: editingBookId, title, autor, genre });
-            if (response.status === 'error') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Hubo un error al editar el libro',
-                });
-                return;
-            }
+    if (isEditing) {
+        const response = await editBook({ id: editingBookId, title, autor, genre });
+        if (response.status === 'error') {
             Swal.fire({
-                icon: 'success',
-                title: 'Libro editado',
-                text: 'El libro ha sido editado con éxito',
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al editar el libro',
             });
-            isEditing = false;
-            editingBookId = null;
-            submitButton.textContent = 'Agregar';
-        } else {
-            // Agregar nuevo libro
-            const libroExistente = ListaLibros.find(libro => libro.title === title && libro.autor === autor);
-            if (libroExistente) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Ingreso inválido',
-                    text: 'El libro ya existe',
-                });
-                return;
-            }
-            const libro = { title, autor, genre };
-            await addBook(libro);
+            return;
         }
+        Swal.fire({
+            icon: 'success',
+            title: 'Libro editado',
+            text: 'El libro ha sido editado con éxito',
+        });
+        isEditing = false;
+        editingBookId = null;
+        submitButton.textContent = 'Agregar';
+    } else {
+        const libroExistente = ListaLibros.find(libro => libro.title === title);
+        if (libroExistente) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Ingreso inválido',
+                text: 'El título ya existe',
+            });
+            return;
+        }
+        const libro = { title, autor, genre };
+        await addBook(libro);
+    }
 
-        // Resetear formulario y recargar lista de libros
-        bookForm.reset();
-        ListaLibros = await conectar('/books/list');
-        await cargarLibros(ListaLibros);
-    });
+    bookForm.reset();
+    ListaLibros = await fetchGet('/books/list');
+    await cargarLibros(tbody, ListaLibros);
+});
 
-    // Filtrar libros por título
-    searchByTitleInput.addEventListener('input', () => {
-        filterBooks();
-    });
+searchByTitleInput.addEventListener('input', () => {
+    filterBooks();
+});
+
+searchByAuthorInput.addEventListener('input', () => {
+    filterBooks();
+});
+
+searchByGenreInput.addEventListener('input', () => {
+    filterBooks();
+});
+
+async function cargarGeneros() {
+    const genres = await fetchGet('/books/genres');
+    const genreDropdown = document.getElementById('generosLista');
+    genreDropdown.innerHTML = '<a class="dropdown-item" href="/books/view" id="allBooks">Todos</a>';
+    if (Array.isArray(genres)) {
+        genres.forEach(genre => {
+            const genreItem = document.createElement('a');
+            genreItem.classList.add('dropdown-item');
+            genreItem.href = `/books/view?genre=${genre}`;
+            genreItem.textContent = genre;
+            genreDropdown.appendChild(genreItem);
+        });
+    }
 }
 
-// Filtrar libros según los criterios de búsqueda
+document.addEventListener('DOMContentLoaded', () => {
+    const librosDropdown = document.getElementById('librosDropdown');
+    librosDropdown.addEventListener('mouseover', cargarGeneros);
+});
+
 function filterBooks() {
     const titleFilter = searchByTitleInput.value.toLowerCase();
-
-    const filteredBooks = ListaLibros.filter(libro => {
-        const titleMatch = libro.title.toLowerCase().includes(titleFilter);
-        return titleMatch;
-    });
-
-    cargarLibros(filteredBooks);
+    const authorFilter = searchByAuthorInput.value.toLowerCase();
+    const genreFilter = searchByGenreInput.value.toLowerCase();
+    const filteredBooks = ListaLibros.filter(libro => 
+        libro.title.toLowerCase().includes(titleFilter) &&
+        libro.autor.toLowerCase().includes(authorFilter) &&
+        libro.genre.toLowerCase().includes(genreFilter)
+    );
+    cargarLibros(tbody, filteredBooks);
 }
 
-// Cargar libros en la tabla
-async function cargarLibros(libros) {
-    tbody.innerHTML = '';
+async function cargarLibros(tableElement, libros) {
+    tableElement.innerHTML = '';
     if (libros.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5">No hay libros registrados</td></tr>';
+        tableElement.innerHTML = '<tr><td colspan="5">No hay libros registrados</td></tr>';
         return;
     }
     libros.forEach(libro => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${libro.id}</td>
-            <td>${libro.title}</td>
-            <td>${libro.autor}</td>
-            <td>${libro.genre}</td>
-            <td>
-                <button class="btn btn-primary btn-edit" data-id="${libro.id}">Editar</button>
-                <button class="btn btn-danger btn-delete" data-id="${libro.id}">Eliminar</button>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-
-    // Añadir eventos de clic para los botones de editar y eliminar
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', handleEdit);
-    });
-
-    document.querySelectorAll('.btn-delete').forEach(button => {
-        button.addEventListener('click', handleDelete);
+        const row = createTableRow(libro);
+        tableElement.appendChild(row);
     });
 }
 
-// Manejar la edición de un libro
-async function handleEdit(event) {
-    const bookId = event.target.dataset.id;
-    const libro = ListaLibros.find(libro => libro.id == bookId);
-    if (libro) {
+function createTableRow(libro) {
+    const row = document.createElement('tr');
+    ['index', 'title', 'autor', 'genre'].forEach((key) => {
+        const cell = document.createElement('td');
+        cell.textContent = key === 'index' ? ListaLibros.indexOf(libro) + 1 : libro[key];
+        row.appendChild(cell);
+    });
+
+    const actionCell = createActionCell(libro);
+    row.appendChild(actionCell);
+
+    return row;
+}
+
+function createActionCell(libro) {
+    const actionCell = document.createElement('td');
+
+    const editButton = createEditButton(libro);
+    actionCell.appendChild(editButton);
+
+    const deleteButton = createDeleteButton(libro);
+    actionCell.appendChild(deleteButton);
+
+    return actionCell;
+}
+
+function createEditButton(libro) {
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Editar';
+    editButton.classList.add('btn', 'btn-primary', 'mr-2');
+    editButton.style.marginRight = '10px';
+    editButton.addEventListener('click', () => {
         bookForm.title.value = libro.title;
         bookForm.autor.value = libro.autor;
         bookForm.genre.value = libro.genre;
         isEditing = true;
-        editingBookId = bookId;
+        editingBookId = libro.id;
         submitButton.textContent = 'Actualizar';
-    }
+    });
+    return editButton;
 }
 
-// Manejar la eliminación de un libro
-async function handleDelete(event) {
-    const bookId = event.target.dataset.id;
+function createDeleteButton(libro) {
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Eliminar';
+    deleteButton.classList.add('btn', 'btn-danger');
+    deleteButton.addEventListener('click', async () => {
+        handleDelete(libro);
+    });
+    return deleteButton;
+}
+
+async function editBook(libro) {
+    const data = new FormData();
+    data.append('id', libro.id);
+    data.append('title', libro.title);
+    data.append('autor', libro.autor);
+    data.append('genre', libro.genre);
+    return await conectar('/books/edit', data);
+}
+
+async function handleDelete(libro) {
     const result = await Swal.fire({
         title: '¿Estás seguro?',
         text: "¡No podrás revertir esto!",
@@ -143,43 +195,31 @@ async function handleDelete(event) {
     });
 
     if (result.isConfirmed) {
-        const response = await deleteBook(bookId);
-        if (response.status === 'success') {
-            Swal.fire(
-                'Eliminado!',
-                'El libro ha sido eliminado.',
-                'success'
-            );
-            ListaLibros = await conectar('/books/list');
-            await cargarLibros(ListaLibros);
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Hubo un error al eliminar el libro',
-            });
-        }
+        await deleteBook(libro.id);
     }
 }
 
-// Editar libro
-async function editBook(libro) {
-    const data = new FormData();
-    data.append('id', libro.id);
-    data.append('title', libro.title);
-    data.append('autor', libro.autor);
-    data.append('genre', libro.genre);
-    return await conectar('/books/edit', data);
-}
-
-// Eliminar libro
 async function deleteBook(id) {
     const data = new FormData();
     data.append('id', id);
-    return await conectar('/books/delete', data);
+    const response = await conectar('/books/delete', data);
+    if (response.status === 'error') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hubo un error al eliminar el libro ' + response.message,
+        });
+        return;
+    }
+    Swal.fire(
+        'Eliminado!',
+        'El libro ha sido eliminado.',
+        'success'
+    );
+    ListaLibros = await fetchGet('/books/list');
+    await cargarLibros(tbody, ListaLibros);
 }
 
-// Agregar nuevo libro
 async function addBook(libro) {
     const data = new FormData();
     data.append('title', libro.title);
@@ -200,11 +240,3 @@ async function addBook(libro) {
         text: response.message,
     });
 }
-
-// Llamar a la función principal
-main();
-
-export { cargarLibros, handleEdit, handleDelete };
-
-
-

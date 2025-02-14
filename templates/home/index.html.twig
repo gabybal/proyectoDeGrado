@@ -7,29 +7,39 @@
 {% endblock %}
 
 {% block body %}
-    <header class="bg-dark text-white text-center py-3">
-        <h1>Estadísticas de la Biblioteca</h1>
-        <button onclick="window.print()" class="btn btn-primary mt-3">Imprimir Estadísticas</button>
+    <header class="bg-secondary text-white text-center py-5" style="background-color: var(--color-quinary);">
+        <h1 class="display-4">Estadísticas de la Biblioteca</h1>
+        
+        <button onclick="window.print()" class="btn btn-outline-light mt-4">Imprimir Estadísticas</button>
     </header>
 
-    <section class="estadisticas row mt-4">
-        <article class="grafico col-md-6 col-lg-4 mb-4">
-            <header></header>
-            <canvas id="graficoGeneros"></canvas>
-        </article>
-        <article class="grafico col-md-6 col-lg-4 mb-4">
-            <header></header>
-            <canvas id="graficoLibros"></canvas>
-        </article>
-        <article class="grafico col-md-6 col-lg-4 mb-4">
-            <header></header>
-            <canvas id="graficoAutores"></canvas>
-        </article>
-        <article class="grafico col-md-6 col-lg-4 mb-4">
-            <header></header>
-            <canvas id="graficoEstudiantes"></canvas>
-        </article>
+    <section class="estadisticas row justify-content-center mt-4">
+        <div class="col-md-6 mb-4 d-flex justify-content-center">
+            <article class="grafico">
+                <header></header>
+                <canvas id="graficoGeneros" style="width: 100%; height: 400px;"></canvas>
+            </article>
+        </div>
+        <div class="col-md-6 mb-4 d-flex justify-content-center">
+            <article class="grafico">
+                <header></header>
+                <canvas id="graficoLibros" style="width: 100%; height: 400px;"></canvas>
+            </article>
+        </div>
+        <div class="col-md-6 mb-4 d-flex justify-content-center">
+            <article class="grafico">
+                <header></header>
+                <canvas id="graficoAutores" style="width: 100%; height: 400px;"></canvas>
+            </article>
+        </div>
+        <div class="col-md-6 mb-4 d-flex justify-content-center">
+            <article class="grafico">
+                <header></header>
+                <canvas id="graficoEstudiantes" style="width: 100%; height: 400px;"></canvas>
+            </article>
+        </div>
     </section>
+    
 {% endblock %}
 
 {% block javascripts %}

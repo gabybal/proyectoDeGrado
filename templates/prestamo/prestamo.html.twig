@@ -17,6 +17,7 @@
     <form id="addPrestamoForm" class="input-group mb-3">
         <input type="text" name="student" class="form-control" required placeholder="Cédula del estudiante" aria-label="Cédula del estudiante" id="studentCedulaInput" required>
         <input type="text" name="book" class="form-control" required placeholder="Título del libro" aria-label="Título del libro" id="bookTitleInput" required>
+        <div id="bookSuggestions" class="list-group position-absolute w-100"></div>
         <input type="date" name="fechaPrestamo" class="form-control" required placeholder="Fecha de préstamo" aria-label="Fecha de préstamo" id="fechaPrestamoInput" required>
         <button type="submit" class="btn btn-success">Agregar</button>
     </form>

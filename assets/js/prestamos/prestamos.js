@@ -9,6 +9,7 @@ const prestamoForm = document.getElementById('addPrestamoForm');
 const submitButton = prestamoForm.querySelector('button[type="submit"]');
 const studentCedulaInput = document.getElementById('studentCedulaInput');
 const bookTitleInput = document.getElementById('bookTitleInput');
+const bookSuggestions = document.getElementById('bookSuggestions');
 
 // Cargar lista de préstamos al iniciar
 (async function() {
@@ -75,6 +76,31 @@ prestamoForm.addEventListener('submit', async (event) => {
     await cargarPrestamos(tbody, ListaPrestamos);
 });
 
+// Manejar el evento de entrada en el campo de título del libro
+bookTitleInput.addEventListener('input', async () => {
+    const titulo = bookTitleInput.value;
+    if (titulo.length >= 3) {
+        const libros = await conectar(`/books/search?titulo=${encodeURIComponent(titulo)}`, null, 'GET');
+        mostrarSugerencias(libros);
+    } else {
+        bookSuggestions.innerHTML = '';
+    }
+});
+
+// Mostrar sugerencias de libros
+function mostrarSugerencias(libros) {
+    bookSuggestions.innerHTML = '';
+    libros.forEach(libro => {
+        const suggestion = document.createElement('a');
+        suggestion.textContent = libro.titulo;
+        suggestion.classList.add('list-group-item', 'list-group-item-action');
+        suggestion.addEventListener('click', () => {
+            bookTitleInput.value = libro.titulo;
+            bookSuggestions.innerHTML = '';
+        });
+        bookSuggestions.appendChild(suggestion);
+    });
+}
 
 // Cargar préstamos en la tabla
 async function cargarPrestamos(tableElement, prestamos) {
